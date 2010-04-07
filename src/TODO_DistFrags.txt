@@ -1,0 +1,40 @@
+TODO
+
+code aufräumen:
+--------------------------------
+
+* knn-debug rausnehmen, komplett als einen aufruf mit überschriebenen klassen
+
+* fest filter rausnehmen aus crossvalition
+
+
+performanz:
+--------------------------------
+
+* was braucht so lang beim ibk
+
+
+vergleich:
+--------------------------------
+
+* tanimoto vs ibk klassisch -> gleich?!?!
+
+
+distanz-vergleich:
+--------------------------------
+
+* plotten von verschiedenen set-distanzen gleichzeitig
+
+* welches funktioniert warum am besten?
+
+* distanz-funktion optimieren
+
+
+mergen von tanimoto und distanz:
+--------------------------------
+
+* distanz = tanimoto (normiert auf 0-1) + dist (normiert auf -0.5 - 0.5 (missing = 0))
+
+* eventuell wahlweise: 10-NN mit 5-NN aus tanimoto und 5-NN aus dist
+
+
