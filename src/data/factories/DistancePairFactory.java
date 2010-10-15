@@ -6,18 +6,18 @@ import io.Status;
 
 import java.io.File;
 
-import launch.Settings;
 import data.DistancePairData;
 import data.FragmentMoleculeData;
 import data.MoleculeActivityData;
-import data.mining.DistancePairMiner;
 import filter.DistancePairFilter;
 
 public class DistancePairFactory
 {
-	public static DistancePairData mineDistancePairs(MoleculeActivityData data, FragmentMoleculeData fragments)
+	public static DistancePairData mineDistancePairs(MoleculeActivityData data,
+			FragmentMoleculeData fragments)
 	{
-		String fragmentName = DataFileManager.getFragmentNameDistancePair(fragments.getFragmentName());
+		String fragmentName = DataFileManager.getFragmentNameDistancePair(fragments
+				.getFragmentName());
 
 		File f = DataFileManager.getDistancePairFile(data.getDatasetName(), fragmentName);
 
@@ -25,20 +25,14 @@ public class DistancePairFactory
 
 		if (f.exists())
 		{
-			res = DistancePairDataIO.readFromDistancePairFile(fragmentName, f, fragments.getFragments());
+			res = DistancePairDataIO.readFromDistancePairFile(fragmentName, f, fragments
+					.getFragments());
 		}
 		else
 		{
-			if (Settings.isModeExternOpenBabel())
-			{
-				DistancePairDataIO.mineDistancesExternalOB(f, data, fragments);
-				res = DistancePairDataIO.readFromDistancePairFile(fragmentName, f, fragments.getFragments());
-			}
-			else
-			{
-				res = DistancePairMiner.mineDistancePairs(fragmentName, data, fragments);
-				DistancePairDataIO.writeToDistancePairFile(f, res);
-			}
+			DistancePairDataIO.mineDistancesExternalOB(f, data, fragments);
+			res = DistancePairDataIO.readFromDistancePairFile(fragmentName, f, fragments
+					.getFragments());
 		}
 
 		Status.INFO.println(Status.INDENT + res);
@@ -47,32 +41,25 @@ public class DistancePairFactory
 		return res;
 	}
 
-	public static DistancePairData checkDistancePairs(MoleculeActivityData testData, FragmentMoleculeData testFragments,
-			DistancePairData trainingDistancePairs)
+	public static DistancePairData checkDistancePairs(MoleculeActivityData testData,
+			FragmentMoleculeData testFragments, DistancePairData trainingDistancePairs)
 	{
-		File f = DataFileManager.getDistancePairFile(testData.getDatasetName(), trainingDistancePairs.getFragmentName());
+		File f = DataFileManager.getDistancePairFile(testData.getDatasetName(),
+				trainingDistancePairs.getFragmentName());
 
 		DistancePairData res = null;
 
 		if (f.exists())
 		{
-			res = DistancePairDataIO.readFromDistancePairFile(trainingDistancePairs.getFragmentName(), f, testFragments
-					.getFragments());
+			res = DistancePairDataIO.readFromDistancePairFile(trainingDistancePairs
+					.getFragmentName(), f, testFragments.getFragments());
 		}
 		else
 		{
-			if (Settings.isModeExternOpenBabel())
-			{
-				DistancePairDataIO.checkDistancesExternalOB(f, testData, testFragments, trainingDistancePairs);
-				res = DistancePairDataIO.readFromDistancePairFile(trainingDistancePairs.getFragmentName(), f, testFragments
-						.getFragments());
-			}
-			else
-			{
-				res = DistancePairMiner.checkDistancePairs(trainingDistancePairs.getFragmentName(), testData, testFragments,
-						trainingDistancePairs);
-				DistancePairDataIO.writeToDistancePairFile(f, res);
-			}
+			DistancePairDataIO.checkDistancesExternalOB(f, testData, testFragments,
+					trainingDistancePairs);
+			res = DistancePairDataIO.readFromDistancePairFile(trainingDistancePairs
+					.getFragmentName(), f, testFragments.getFragments());
 		}
 
 		Status.INFO.println(Status.INDENT + res);
@@ -81,16 +68,17 @@ public class DistancePairFactory
 		return res;
 	}
 
-	public static DistancePairData applyFilter_minePairs(MoleculeActivityData data, FragmentMoleculeData frag,
-			DistancePairFilter filter)
+	public static DistancePairData applyFilter_minePairs(MoleculeActivityData data,
+			FragmentMoleculeData frag, DistancePairFilter filter)
 	{
-		String distancePairName = DataFileManager.getFragmentNameFiltered(DataFileManager.getFragmentNameDistancePair(frag
-				.getFragmentName()), filter);
+		String distancePairName = DataFileManager.getFragmentNameFiltered(DataFileManager
+				.getFragmentNameDistancePair(frag.getFragmentName()), filter);
 		File f = DataFileManager.getDistancePairFile(data.getDatasetName(), distancePairName);
 		DistancePairData res = null;
 
 		if (f.exists())
-			res = DistancePairDataIO.readFromDistancePairFile(distancePairName, f, frag.getFragments());
+			res = DistancePairDataIO.readFromDistancePairFile(distancePairName, f, frag
+					.getFragments());
 		else
 		{
 			DistancePairData pairs = DistancePairFactory.mineDistancePairs(data, frag);
@@ -103,14 +91,17 @@ public class DistancePairFactory
 		return res;
 	}
 
-	public static DistancePairData applyFilter(DistancePairData pairs, MoleculeActivityData data, DistancePairFilter filter)
+	public static DistancePairData applyFilter(DistancePairData pairs, MoleculeActivityData data,
+			DistancePairFilter filter)
 	{
-		String fragmentName = DataFileManager.getFragmentNameFiltered(pairs.getFragmentName(), filter);
+		String fragmentName = DataFileManager.getFragmentNameFiltered(pairs.getFragmentName(),
+				filter);
 		File f = DataFileManager.getDistancePairFile(data.getDatasetName(), fragmentName);
 		DistancePairData res = null;
 
 		if (f.exists())
-			res = DistancePairDataIO.readFromDistancePairFile(fragmentName, f, pairs.getFragments());
+			res = DistancePairDataIO
+					.readFromDistancePairFile(fragmentName, f, pairs.getFragments());
 		else
 		{
 			res = filter.apply(fragmentName, pairs, data);

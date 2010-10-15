@@ -10,30 +10,6 @@ import eval.WekaClassifierFactory;
 
 public class Settings
 {
-	// OB - CDK switch
-	public static final int MODE_OPEN_BABEL = 1;
-	public static final int MODE_CDK = 2;
-	public static final int MODE_EXTERN_OPEN_BABEL = 3;
-
-	public static final int MODE = MODE_EXTERN_OPEN_BABEL;
-
-	public static boolean isModeOpenBabel()
-	{
-		return MODE == MODE_OPEN_BABEL;
-	}
-
-	public static boolean isModeCDK()
-	{
-		return MODE == MODE_CDK;
-	}
-
-	public static boolean isModeExternOpenBabel()
-	{
-		return MODE == MODE_EXTERN_OPEN_BABEL;
-	}
-
-	// ----------------------------------------------------------
-
 	public static final boolean CACHE_MOLECULES = true;
 	public static final boolean CACHE_DISTANCE_MAPS = true;
 
@@ -99,13 +75,16 @@ public class Settings
 			if (DEBUG_START_CROSSVALIDATION_AT_FOLD > 0)
 				Status.WARN.println(" Starting CV at fold " + DEBUG_START_CROSSVALIDATION_AT_FOLD);
 			if (DEBUG_START_CROSSVALIDATION_AT_DATASET > 0)
-				Status.WARN.println(" Starting CV at dataset " + DEBUG_START_CROSSVALIDATION_AT_DATASET);
+				Status.WARN.println(" Starting CV at dataset "
+						+ DEBUG_START_CROSSVALIDATION_AT_DATASET);
 			if (DEBUG_KNN_PRINT_TESTSET_PREDICT)
 				Status.WARN.println(" Print knn test set prediciton");
 			if (DEBUG_KNN_PRINT_SINGLE_PREDICT > 0)
-				Status.WARN.println(" Print knn single prediction for test inst " + DEBUG_KNN_PRINT_SINGLE_PREDICT);
+				Status.WARN.println(" Print knn single prediction for test inst "
+						+ DEBUG_KNN_PRINT_SINGLE_PREDICT);
 			if (DEBUG_KNN_PRINT_SINGLE_NEIGHBOUR.length > 0)
-				Status.WARN.println(" Print knn single neighbours for train inst " + Arrays.toString(DEBUG_KNN_PRINT_SINGLE_NEIGHBOUR));
+				Status.WARN.println(" Print knn single neighbours for train inst "
+						+ Arrays.toString(DEBUG_KNN_PRINT_SINGLE_NEIGHBOUR));
 			if (DEBUG_KNN_BAR_PLOT)
 				Status.WARN.println(" Show knn bar plot");
 			if (DEBUG_KNN_LINE_PLOT)
@@ -146,8 +125,9 @@ public class Settings
 
 	// algorithms
 
-	public static final WekaClassifierFactory.NamedClassifier CLASSIFIERS[] = { WekaClassifierFactory.getId3(),
-			WekaClassifierFactory.getId3Both(), WekaClassifierFactory.getId3Include(), WekaClassifierFactory.getId3Exclude(),
+	public static final WekaClassifierFactory.NamedClassifier CLASSIFIERS[] = {
+			WekaClassifierFactory.getId3(), WekaClassifierFactory.getId3Both(),
+			WekaClassifierFactory.getId3Include(), WekaClassifierFactory.getId3Exclude(),
 	// WekaClassifierFactory.getId3(true)
 	// WekaClassifierFactory.getIBK(),
 	// wekaClassifierFactory.getIBK_tanimoto(), WekaClassifierFactory.getJ48(),
@@ -162,10 +142,10 @@ public class Settings
 
 	static
 	{
-		if (MODE == MODE_OPEN_BABEL)
-		{
-			System.loadLibrary("openbabel");
-		}
+		// if (MODE == MODE_OPEN_BABEL)
+		// {
+		// System.loadLibrary("openbabel");
+		// }
 
 		boolean knecht = false;
 		try

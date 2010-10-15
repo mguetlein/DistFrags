@@ -6,19 +6,18 @@ import io.Status;
 
 import java.io.File;
 
-import launch.Settings;
 import data.FragmentData;
 import data.FragmentMoleculeData;
 import data.MoleculeActivityData;
 import data.MoleculeData;
-import data.mining.FragmentChecker;
 import filter.ChiSquareFragmentFilter;
 import filter.FragmentFilter;
 
 public class FragmentFactory
 {
 
-	public static FragmentMoleculeData mineFragments(String fragmentType, MoleculeActivityData molecules)
+	public static FragmentMoleculeData mineFragments(String fragmentType,
+			MoleculeActivityData molecules)
 	{
 		File f = DataFileManager.getLinfragFile(molecules.getDatasetName(), fragmentType);
 
@@ -46,7 +45,8 @@ public class FragmentFactory
 
 	public static FragmentMoleculeData checkFragments(MoleculeData molecules, FragmentData fragments)
 	{
-		File f = DataFileManager.getLinfragFile(molecules.getDatasetName(), fragments.getFragmentName());
+		File f = DataFileManager.getLinfragFile(molecules.getDatasetName(), fragments
+				.getFragmentName());
 
 		FragmentMoleculeData res;
 		if (f.exists())
@@ -55,16 +55,8 @@ public class FragmentFactory
 		}
 		else
 		{
-			if (Settings.isModeExternOpenBabel())
-			{
-				FragmentIO.checkFragmentsExternOB(f, molecules, fragments);
-				res = FragmentIO.readFragments(fragments.getFragmentName(), f, molecules);
-			}
-			else
-			{
-				res = FragmentChecker.checkFragments(fragments.getFragmentName(), molecules, fragments);
-				FragmentIO.writeFragmentFile(f, res);
-			}
+			FragmentIO.checkFragmentsExternOB(f, molecules, fragments);
+			res = FragmentIO.readFragments(fragments.getFragmentName(), f, molecules);
 		}
 
 		Status.INFO.println(Status.INDENT + res.toString());
@@ -72,10 +64,11 @@ public class FragmentFactory
 		return res;
 	}
 
-	public static FragmentMoleculeData applyFilter(FragmentMoleculeData fragments, MoleculeActivityData data,
-			FragmentFilter filter)
+	public static FragmentMoleculeData applyFilter(FragmentMoleculeData fragments,
+			MoleculeActivityData data, FragmentFilter filter)
 	{
-		String fragmentName = DataFileManager.getFragmentNameFiltered(fragments.getFragmentName(), filter);
+		String fragmentName = DataFileManager.getFragmentNameFiltered(fragments.getFragmentName(),
+				filter);
 
 		File f = DataFileManager.getLinfragFile(data.getDatasetName(), fragmentName);
 
@@ -97,7 +90,8 @@ public class FragmentFactory
 		return res;
 	}
 
-	public static FragmentMoleculeData applyChiSquareFilter(FragmentMoleculeData fragments, MoleculeActivityData data)
+	public static FragmentMoleculeData applyChiSquareFilter(FragmentMoleculeData fragments,
+			MoleculeActivityData data)
 	{
 		return applyFilter(fragments, data, new ChiSquareFragmentFilter(100, 0.05));
 	}

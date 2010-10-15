@@ -24,13 +24,10 @@ import data.MoleculeData;
 public class FragmentIO
 {
 	public static final File LINFRAG_DIR = new File(Settings.USER_HOME + "/software/lazar-core");
-	
-	
-	public static void checkFragmentsExternOB(File testFragmentFile, MoleculeData data, FragmentData fragments)
-	{
-		if (!Settings.isModeExternOpenBabel())
-			throw new IllegalStateException();
 
+	public static void checkFragmentsExternOB(File testFragmentFile, MoleculeData data,
+			FragmentData fragments)
+	{
 		DataFileManager.createParentFolders(testFragmentFile);
 		Status.INFO.println(Status.INDENT + "Checking fragments via external OBDistance tool: '"
 				+ testFragmentFile.getName() + "(.tmp)'");
@@ -38,8 +35,8 @@ public class FragmentIO
 		File tempSmilesFile = MoleculeDataIO.createTmpSmilesFile(data);
 		File tempFragmentFile = createTmpFragmentFile(data.getDatasetName(), fragments, false);
 
-		String command = DistancePairDataIO.OB_DISTANCE_DIR+"/OBDistance -s " + tempSmilesFile.getAbsolutePath()
-				+ " -f " + tempFragmentFile + " -p -a";
+		String command = DistancePairDataIO.OB_DISTANCE_DIR + "/OBDistance -s "
+				+ tempSmilesFile.getAbsolutePath() + " -f " + tempFragmentFile + " -p -a";
 
 		ExternalTool.run("OBDistance", testFragmentFile, null, command);
 
@@ -51,16 +48,16 @@ public class FragmentIO
 	public static void createFMinerFile(File fragmentFile, MoleculeActivityData d)
 	{
 		DataFileManager.createParentFolders(fragmentFile);
-		Status.INFO.println(Status.INDENT + "Mining fragments via external fminer tool: '" + fragmentFile.getName()
-				+ "(.tmp)'");
+		Status.INFO.println(Status.INDENT + "Mining fragments via external fminer tool: '"
+				+ fragmentFile.getName() + "(.tmp)'");
 
 		File tempSmilesFile = MoleculeDataIO.createTmpSmilesFile(d);
 		File tempClassFile = MoleculeDataIO.createTmpClassFile(d);
 
 		DatasetSizeSettings.setCurrentDatasetSize(d.getDatasetBaseName());
 		File dir = new File(Settings.USER_HOME + "/software/fminer/");
-		String command = dir.getAbsolutePath() + "/fminer -f " + DatasetSizeSettings.MIN_FREQUENCY + " -n "
-				+ tempSmilesFile.getAbsolutePath() + " " + tempClassFile.getAbsolutePath();
+		String command = dir.getAbsolutePath() + "/fminer -f " + DatasetSizeSettings.MIN_FREQUENCY
+				+ " -n " + tempSmilesFile.getAbsolutePath() + " " + tempClassFile.getAbsolutePath();
 		String[] env = new String[] { "FMINER_SMARTS=1", "FMINER_LAZAR=1" };
 
 		ExternalTool.run("fminer", fragmentFile, null, command, env, dir);
@@ -73,8 +70,8 @@ public class FragmentIO
 	public static void createLinfragFileUsingFminer(File fragmentFile, MoleculeActivityData d)
 	{
 		DataFileManager.createParentFolders(fragmentFile);
-		Status.INFO.println(Status.INDENT + "Mining linear fragments via external fminer tool: '" + fragmentFile.getName()
-				+ "(.tmp)'");
+		Status.INFO.println(Status.INDENT + "Mining linear fragments via external fminer tool: '"
+				+ fragmentFile.getName() + "(.tmp)'");
 
 		File tempSmilesFile = MoleculeDataIO.createTmpSmilesFile(d);
 		File tempClassFile = MoleculeDataIO.createTmpClassFile(d);
@@ -82,7 +79,8 @@ public class FragmentIO
 		DatasetSizeSettings.setCurrentDatasetSize(d.getDatasetBaseName());
 		File dir = new File(Settings.USER_HOME + "/software/fminer/");
 		String command = dir.getAbsolutePath() + "/fminer -f " + DatasetSizeSettings.MIN_FREQUENCY
-				+ " -l 1 -n -d -b -p 0 -u " + tempSmilesFile.getAbsolutePath() + " " + tempClassFile.getAbsolutePath();
+				+ " -l 1 -n -d -b -p 0 -u " + tempSmilesFile.getAbsolutePath() + " "
+				+ tempClassFile.getAbsolutePath();
 		String[] env = new String[] { "FMINER_SMARTS=1", "FMINER_LAZAR=1" };
 
 		ExternalTool.run("fminer", fragmentFile, null, command, env, dir);
@@ -95,22 +93,24 @@ public class FragmentIO
 	public static void createLinfragFile(File fragmentFile, MoleculeData d)
 	{
 		DataFileManager.createParentFolders(fragmentFile);
-		Status.INFO.println(Status.INDENT + "Mining fragments via external linfrag tool: '" + fragmentFile.getName()
-				+ "(.tmp)'");
+		Status.INFO.println(Status.INDENT + "Mining fragments via external linfrag tool: '"
+				+ fragmentFile.getName() + "(.tmp)'");
 
 		File tempSmilesFile = MoleculeDataIO.createTmpSmilesFile(d);
 
 		DatasetSizeSettings.setCurrentDatasetSize(d.getDatasetBaseName());
-		String command = LINFRAG_DIR.getAbsolutePath()+"/linfrag -f " + DatasetSizeSettings.MIN_FREQUENCY + " -s "
-				+ tempSmilesFile.getAbsolutePath() + " -a " + LINFRAG_DIR.getAbsolutePath()+"/data/elements.txt";
- 
+		String command = LINFRAG_DIR.getAbsolutePath() + "/linfrag -f "
+				+ DatasetSizeSettings.MIN_FREQUENCY + " -s " + tempSmilesFile.getAbsolutePath()
+				+ " -a " + LINFRAG_DIR.getAbsolutePath() + "/data/elements.txt";
+
 		ExternalTool.run("linfrag", fragmentFile, ".*LEVEL.*", command);
 
 		tempSmilesFile.delete();
 		// Status.INFO.println("done");
 	}
 
-	public static File createTmpFragmentFile(String datasetName, FragmentData fragments, boolean printMoleculeOcurrences)
+	public static File createTmpFragmentFile(String datasetName, FragmentData fragments,
+			boolean printMoleculeOcurrences)
 	{
 		FragmentMoleculeData fragmentMoleculeData = null;
 		if (printMoleculeOcurrences)
@@ -118,8 +118,10 @@ public class FragmentIO
 
 		try
 		{
-			File tempFragFile = File.createTempFile(datasetName + "." + fragments.getFragmentName(), ".frag");
-			Status.INFO.println(Status.INDENT + "Writing tmp fragment file: '" + tempFragFile.getName() + "'");
+			File tempFragFile = File.createTempFile(
+					datasetName + "." + fragments.getFragmentName(), ".frag");
+			Status.INFO.println(Status.INDENT + "Writing tmp fragment file: '"
+					+ tempFragFile.getName() + "'");
 			tempFragFile.deleteOnExit();
 
 			PrintStream out = new PrintStream(tempFragFile);
@@ -189,7 +191,8 @@ public class FragmentIO
 		// Status.INFO.println("done");
 	}
 
-	public static FragmentMoleculeData readFragments(String fragmentName, File linfragFile, MoleculeData molecules)
+	public static FragmentMoleculeData readFragments(String fragmentName, File linfragFile,
+			MoleculeData molecules)
 	{
 		List<String> fragments = new ArrayList<String>();
 		HashMap<Integer, List<Integer>> fragmentsToMolecules = new HashMap<Integer, List<Integer>>();
@@ -227,8 +230,8 @@ public class FragmentIO
 				}
 
 				if (fragment == null || occurences == null)
-					throw new IllegalStateException("wrong smiles file format, " + linfragFile + ": '" + s + "', fragment:"
-							+ fragment + ", occurences:" + occurences);
+					throw new IllegalStateException("wrong smiles file format, " + linfragFile
+							+ ": '" + s + "', fragment:" + fragment + ", occurences:" + occurences);
 
 				if (fragments.contains(fragment))
 					Status.WARN.println("fragment occures twice " + fragment);

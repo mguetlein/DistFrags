@@ -22,24 +22,27 @@ import data.MoleculeActivityData;
 
 public class DistancePairDataIO
 {
-	public static final File OB_DISTANCE_DIR = new File(Settings.USER_HOME + "/workspace/OBDistance/Release");
+	public static final File OB_DISTANCE_DIR = new File(Settings.USER_HOME
+			+ "/workspace/OBDistance/Release");
 
-	public static void mineDistancesExternalOB(File f, MoleculeActivityData data, FragmentMoleculeData fragments)
+	public static void mineDistancesExternalOB(File f, MoleculeActivityData data,
+			FragmentMoleculeData fragments)
 	{
-		if (!Settings.isModeExternOpenBabel())
-			throw new IllegalStateException();
-
 		DataFileManager.createParentFolders(f);
-		Status.INFO.println(Status.INDENT + "Mining distances via external OBDistance tool: '" + f.getName() + "(.tmp)'");
+		Status.INFO.println(Status.INDENT + "Mining distances via external OBDistance tool: '"
+				+ f.getName() + "(.tmp)'");
 
 		File tempSmilesFile = MoleculeDataIO.createTmpSmilesFile(data);
 		File tempClassFile = MoleculeDataIO.createTmpClassFile(data);
-		File tempFragmentFile = FragmentIO.createTmpFragmentFile(data.getDatasetName(), fragments, true);
+		File tempFragmentFile = FragmentIO.createTmpFragmentFile(data.getDatasetName(), fragments,
+				true);
 
 		DatasetSizeSettings.setCurrentDatasetSize(data.getDatasetBaseName());
-		String command = OB_DISTANCE_DIR + "/OBDistance -s " + tempSmilesFile.getAbsolutePath() + " -f "
-				+ tempFragmentFile.getAbsolutePath() + " -c " + tempClassFile.getAbsolutePath() + " -z -o -d -a -m "
-				+ DatasetSizeSettings.MIN_FREQUENCY + " -i " + DatasetSizeSettings.MIN_FREQUENCY_PER_CLASS;
+		String command = OB_DISTANCE_DIR + "/OBDistance -s " + tempSmilesFile.getAbsolutePath()
+				+ " -f " + tempFragmentFile.getAbsolutePath() + " -c "
+				+ tempClassFile.getAbsolutePath() + " -z -o -d -a -m "
+				+ DatasetSizeSettings.MIN_FREQUENCY + " -i "
+				+ DatasetSizeSettings.MIN_FREQUENCY_PER_CLASS;
 
 		ExternalTool.run("OBDistance", f, null, command);
 
@@ -49,23 +52,24 @@ public class DistancePairDataIO
 		// Status.INFO.println("done");
 	}
 
-	public static void checkDistancesExternalOB(File f, MoleculeActivityData testData, FragmentMoleculeData testFragments,
-			DistancePairData trainingDists)
+	public static void checkDistancesExternalOB(File f, MoleculeActivityData testData,
+			FragmentMoleculeData testFragments, DistancePairData trainingDists)
 	{
-		if (!Settings.isModeExternOpenBabel())
-			throw new IllegalStateException();
-
 		DataFileManager.createParentFolders(f);
-		Status.INFO.println(Status.INDENT + "Checking distances via external OBDistance tool: '" + f.getName() + "(.tmp)'");
+		Status.INFO.println(Status.INDENT + "Checking distances via external OBDistance tool: '"
+				+ f.getName() + "(.tmp)'");
 
 		File tempSmilesFile = MoleculeDataIO.createTmpSmilesFile(testData);
 		File tempClassFile = MoleculeDataIO.createTmpClassFile(testData);
-		File tempFragmentFile = FragmentIO.createTmpFragmentFile(testData.getDatasetName(), testFragments, true);
-		File tempDistFile = DistancePairDataIO.createTmpDistancePairFileWithoutDistances(testData.getDatasetName(), trainingDists);
+		File tempFragmentFile = FragmentIO.createTmpFragmentFile(testData.getDatasetName(),
+				testFragments, true);
+		File tempDistFile = DistancePairDataIO.createTmpDistancePairFileWithoutDistances(testData
+				.getDatasetName(), trainingDists);
 
-		String command = OB_DISTANCE_DIR + "/OBDistance -z -o -s " + tempSmilesFile.getAbsolutePath() + " -f "
-				+ tempFragmentFile.getAbsolutePath() + " -c " + tempClassFile.getAbsolutePath() + " -t " + tempDistFile.getAbsolutePath()
-				+ " -x -a";
+		String command = OB_DISTANCE_DIR + "/OBDistance -z -o -s "
+				+ tempSmilesFile.getAbsolutePath() + " -f " + tempFragmentFile.getAbsolutePath()
+				+ " -c " + tempClassFile.getAbsolutePath() + " -t "
+				+ tempDistFile.getAbsolutePath() + " -x -a";
 
 		ExternalTool.run("OBDistance", f, null, command);
 
@@ -76,7 +80,8 @@ public class DistancePairDataIO
 		// Status.INFO.println("done");
 	}
 
-	public static DistancePairData readFromDistancePairFile(String distancePairName, File f, List<String> fragments)
+	public static DistancePairData readFromDistancePairFile(String distancePairName, File f,
+			List<String> fragments)
 	{
 		Status.INFO.println(Status.INDENT + "Read distance pairs from file '" + f.getName() + "'");
 
@@ -151,19 +156,23 @@ public class DistancePairDataIO
 			e.printStackTrace();
 		}
 
-		DistancePairDataImpl res = new DistancePairDataImpl(distancePairName, fragments, distancePairs, distancePairToMoleculeDistances);
+		DistancePairDataImpl res = new DistancePairDataImpl(distancePairName, fragments,
+				distancePairs, distancePairToMoleculeDistances);
 
 		// Status.INFO.println("done");
 
 		return res;
 	}
 
-	public static File createTmpDistancePairFileWithoutDistances(String datasetName, DistancePairData d)
+	public static File createTmpDistancePairFileWithoutDistances(String datasetName,
+			DistancePairData d)
 	{
 		try
 		{
-			File tempDistanceFile = File.createTempFile(datasetName + "." + d.getFragmentName(), ".class");
-			Status.INFO.println(Status.INDENT + "Writing tmp class file file: '" + tempDistanceFile.getName() + "'");
+			File tempDistanceFile = File.createTempFile(datasetName + "." + d.getFragmentName(),
+					".class");
+			Status.INFO.println(Status.INDENT + "Writing tmp class file file: '"
+					+ tempDistanceFile.getName() + "'");
 			tempDistanceFile.deleteOnExit();
 
 			PrintStream tmp = new PrintStream(tempDistanceFile);
@@ -200,7 +209,8 @@ public class DistancePairDataIO
 		DataFileManager.createParentFolders(f);
 		File tmp = new File(f + ".tmp");
 
-		Status.INFO.println(Status.INDENT + "Write distance pairs to file '" + f.getName() + "(.tmp)'");
+		Status.INFO.println(Status.INDENT + "Write distance pairs to file '" + f.getName()
+				+ "(.tmp)'");
 
 		try
 		{

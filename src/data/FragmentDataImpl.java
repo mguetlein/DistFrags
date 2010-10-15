@@ -2,9 +2,6 @@ package data;
 
 import java.util.List;
 
-import launch.Settings;
-import data.util.Molecule;
-import data.util.MoleculeCache;
 import data.util.SmilesContainer;
 
 public class FragmentDataImpl implements FragmentData, SmilesContainer
@@ -13,15 +10,10 @@ public class FragmentDataImpl implements FragmentData, SmilesContainer
 
 	List<String> fragments;
 
-	MoleculeCache molecules;
-
 	public FragmentDataImpl(String fragmentName, List<String> fragments)
 	{
 		this.fragmentName = fragmentName;
 		this.fragments = fragments;
-
-		if (Settings.isModeCDK() || Settings.isModeOpenBabel())
-			molecules = new MoleculeCache(this);
 	}
 
 	@Override
@@ -45,12 +37,6 @@ public class FragmentDataImpl implements FragmentData, SmilesContainer
 	public List<String> getFragments()
 	{
 		return fragments;
-	}
-
-	@Override
-	public Molecule getFragmentMolecule(int index)
-	{
-		return molecules.getMolecule(index);
 	}
 
 	@Override

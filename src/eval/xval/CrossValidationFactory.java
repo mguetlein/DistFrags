@@ -6,7 +6,6 @@ import io.arff.DistancePairSetValuedToArff;
 import java.util.ArrayList;
 import java.util.List;
 
-import launch.Settings;
 import util.MinMaxAvg;
 import data.DistancePairData;
 import data.FragmentMoleculeData;
@@ -23,7 +22,8 @@ import filter.TTestFilter;
 public class CrossValidationFactory
 {
 
-	public static void printInfo(final String[] datasets, final String fragmentType, final boolean distancePairInfo)
+	public static void printInfo(final String[] datasets, final String fragmentType,
+			final boolean distancePairInfo)
 	{
 		AbstractCrossValidator cv = new AbstractCrossValidator(datasets)
 		{
@@ -42,7 +42,8 @@ public class CrossValidationFactory
 				if (distancePairInfo)
 					dist = DistancePairFactory.mineDistancePairs(train, frags);
 
-				ResultHandler.getInstance().setDataset(data.getOrigMoleculeActivityData(), train, molSizeInfo, frags, dist);
+				ResultHandler.getInstance().setDataset(data.getOrigMoleculeActivityData(), train,
+						molSizeInfo, frags, dist);
 			}
 
 			@Override
@@ -54,8 +55,6 @@ public class CrossValidationFactory
 			protected void initializeDataset(CrossValidationData data)
 			{
 				this.data = data;
-				if (Settings.isModeCDK() || Settings.isModeOpenBabel())
-					molSizeInfo = data.getOrigMoleculeData().getMoleculeSizeInfo();
 			}
 		};
 		cv.crossValidate();
@@ -67,28 +66,34 @@ public class CrossValidationFactory
 		ResultHandler.getInstance().printResultsAccrossFolds();
 	}
 
-	public static void mineFragments(final String[] datasets, String fragmentType, FragmentFilter filter)
+	public static void mineFragments(final String[] datasets, String fragmentType,
+			FragmentFilter filter)
 	{
-		MineFragmentsCrossValidator cv = new MineFragmentsCrossValidator(datasets, fragmentType, filter);
+		MineFragmentsCrossValidator cv = new MineFragmentsCrossValidator(datasets, fragmentType,
+				filter);
 		cv.crossValidate();
 	}
 
-	public static void mineDistances(final String[] datasets, String fragmentType, DistancePairFilter filter, boolean browse)
+	public static void mineDistances(final String[] datasets, String fragmentType,
+			DistancePairFilter filter, boolean browse)
 	{
-		MineDistancePairsCrossValidator cv = new MineDistancePairsCrossValidator(datasets, fragmentType, filter, browse);
+		MineDistancePairsCrossValidator cv = new MineDistancePairsCrossValidator(datasets,
+				fragmentType, filter, browse);
 		cv.crossValidate();
 	}
 
 	public static void performFragmentCrossValidation(String datasets[], String fragmentType)
 	{
-		EvaluationCrossValidator eval = new EvaluationCrossValidator(datasets, new FragmentCrossValidatable(fragmentType));
+		EvaluationCrossValidator eval = new EvaluationCrossValidator(datasets,
+				new FragmentCrossValidatable(fragmentType));
 		eval.crossValidate();
 	}
 
 	public static void performDistancePairCrossValidation(String datasets[], String fragmentType)
 	{
-		EvaluationCrossValidator eval = new EvaluationCrossValidator(datasets, new DistancePairCrossValidatable(fragmentType,
-				new DistancePairSetValuedToArff(), new TTestFilter(10000, 0.01)));// new
+		EvaluationCrossValidator eval = new EvaluationCrossValidator(datasets,
+				new DistancePairCrossValidatable(fragmentType, new DistancePairSetValuedToArff(),
+						new TTestFilter(10000, 0.01)));// new
 		// TTestFilter(1,
 		// 500,
 
@@ -100,28 +105,30 @@ public class CrossValidationFactory
 		eval.crossValidate();
 	}
 
-	public static void performFragmentAndDistancePairCrossValidation(String datasets[], String fragmentType, FragmentFilter fragFilter,
-			DistancePairFilter distFilter, boolean skipEvaluation)
+	public static void performFragmentAndDistancePairCrossValidation(String datasets[],
+			String fragmentType, FragmentFilter fragFilter, DistancePairFilter distFilter,
+			boolean skipEvaluation)
 	{
 		List<EvaluationCrossValidator> evals = new ArrayList<EvaluationCrossValidator>();
 
 		evals.add(new EvaluationCrossValidator(datasets, new CombinedCrossValidatable(
-				new FragmentCrossValidatable(fragmentType, fragFilter), new DistancePairCrossValidatable(fragmentType,
-						new DistancePairSetValuedToArff(), distFilter))));
+				new FragmentCrossValidatable(fragmentType, fragFilter),
+				new DistancePairCrossValidatable(fragmentType, new DistancePairSetValuedToArff(),
+						distFilter))));
 
 		for (EvaluationCrossValidator eval : evals)
 			eval.crossValidate();
 	}
 
-	public static void performChiSquareFragmentCrossValidation(String datasets[], String fragmentType)
+	public static void performChiSquareFragmentCrossValidation(String datasets[],
+			String fragmentType)
 	{
 		List<EvaluationCrossValidator> evals = new ArrayList<EvaluationCrossValidator>();
 
 		// evals.add(new EvaluationCrossValidator(datasets, new
 		// FragmentCrossValidatable(fragmentType)));
-		evals
-				.add(new EvaluationCrossValidator(datasets, new FragmentCrossValidatable(fragmentType, new ChiSquareFragmentFilter(100,
-						0.05))));
+		evals.add(new EvaluationCrossValidator(datasets, new FragmentCrossValidatable(fragmentType,
+				new ChiSquareFragmentFilter(100, 0.05))));
 		// evals.add(new EvaluationCrossValidator(datasets, new
 		// FragmentCrossValidatable(fragmentType,
 		// new ChiSquareFragmentFilter(5000, 0.05))));
@@ -130,13 +137,15 @@ public class CrossValidationFactory
 			eval.crossValidate();
 	}
 
-	public static void performTTestDistancePairCrossValidation(String datasets[], String fragmentType)
+	public static void performTTestDistancePairCrossValidation(String datasets[],
+			String fragmentType)
 	{
 		List<EvaluationCrossValidator> evals = new ArrayList<EvaluationCrossValidator>();
 
-		evals.add(new EvaluationCrossValidator(datasets, new DistancePairCrossValidatable(fragmentType, new DistancePairOccuringToArff())));
-		evals.add(new EvaluationCrossValidator(datasets, new DistancePairCrossValidatable(fragmentType, new DistancePairOccuringToArff(),
-				new TTestFilter(100, 0.05))));
+		evals.add(new EvaluationCrossValidator(datasets, new DistancePairCrossValidatable(
+				fragmentType, new DistancePairOccuringToArff())));
+		evals.add(new EvaluationCrossValidator(datasets, new DistancePairCrossValidatable(
+				fragmentType, new DistancePairOccuringToArff(), new TTestFilter(100, 0.05))));
 
 		for (EvaluationCrossValidator eval : evals)
 			eval.crossValidate();
