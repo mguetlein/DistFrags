@@ -57,7 +57,7 @@ public class Molecule
 		{
 			SWIGTYPE_p_std__vectorT_OpenBabel__OBAtom_p_t__iterator atomIterator = obMol.BeginAtoms();
 			OBAtom atom25 = obMol.BeginAtom(atomIterator);
-			atom25.heyHoImAnAtom();
+			//atom25.heyHoImAnAtom();
 
 			for (OBAtom atom : new OBMolAtomIter(obMol))
 				if (!atom.IsCarbon())

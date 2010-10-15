@@ -22,7 +22,12 @@ public abstract class AbstractCrossValidator
 
 	abstract protected void crossValidateFold(int fold);
 
-	abstract protected void finalizeDataset();
+	abstract protected void storeResults();
+
+	protected boolean resultsExist()
+	{
+		return false;
+	}
 
 	public void crossValidate()
 	{
@@ -36,8 +41,7 @@ public abstract class AbstractCrossValidator
 					+ StringUtil.getTimeStamp(Settings.START_TIME) + "\n");
 
 			MoleculeActivityData d = MoleculeFactory.getMoleculeActivityData(datasets[n]);
-			CrossValidationData xval = new CrossValidationData(d, Settings.CV_NUM_FOLDS, Settings.CV_RANDOM_SEED,
-					Settings.CV_STRATIFIED);
+			CrossValidationData xval = new CrossValidationData(d, Settings.CV_NUM_FOLDS, Settings.CV_RANDOM_SEED, Settings.CV_STRATIFIED);
 
 			ResultHandler.getInstance().set(ResultHandler.PROPERTY_DATASET_NAME, datasets[n]);
 			ResultHandler.getInstance().set(ResultHandler.PROPERTY_CV_SEED, Settings.CV_RANDOM_SEED);
@@ -45,6 +49,12 @@ public abstract class AbstractCrossValidator
 			ResultHandler.getInstance().set(ResultHandler.PROPERTY_CV_STRATIFIED, Settings.CV_STRATIFIED);
 
 			initializeDataset(xval);
+
+			if (!Settings.DEBUG_SKIP_RESULT_EXIST_CHECK && resultsExist())
+			{
+				Status.INFO.println("Results exist, skipping crossvalidation!");
+				continue;
+			}
 
 			int startFold = 0;
 			if (Settings.DEBUG_START_CROSSVALIDATION_AT_FOLD > 0)
@@ -55,25 +65,24 @@ public abstract class AbstractCrossValidator
 				ResultHandler.getInstance().set(ResultHandler.PROPERTY_CV_FOLD, (i + 1));
 
 				System.gc();
-				Status.INFO.println("\ndataset " + (n + 1) + "/" + datasets.length + ": " + datasets[n] + "\nfold    "
-						+ (i + 1) + "/" + Settings.CV_NUM_FOLDS + "\n" + StringUtil.getTimeStamp(Settings.START_TIME)
-						+ ", mem-usage: " + MemoryUtil.getUsedMemoryString() + "\n");
+				Status.INFO.println("\ndataset " + (n + 1) + "/" + datasets.length + ": " + datasets[n] + "\nfold    " + (i + 1) + "/"
+						+ Settings.CV_NUM_FOLDS + "\n" + StringUtil.getTimeStamp(Settings.START_TIME) + ", mem-usage: "
+						+ MemoryUtil.getUsedMemoryString() + "\n");
 
 				crossValidateFold(i);
 
 				ResultHandler.getInstance().printResultsForDataset(false, datasets[n]);
 
-				if (Settings.DEBUG_ABORT_CROSSVALIDATION_AFTER_FIRST_FOLD
-						|| Settings.DEBUG_ABORT_EVALUATION_AFTER_FIRST_ALGORITHM)
+				if (Settings.DEBUG_ABORT_CROSSVALIDATION_AFTER_FIRST_FOLD || Settings.DEBUG_ABORT_EVALUATION_AFTER_FIRST_ALGORITHM)
 					break;
 			}
 
-			ResultHandler.getInstance().printResultsAccrossFolds(false);
+			// ResultHandler.getInstance().printResultsAccrossFolds(false);
 
 			if (Settings.DEBUG_ABORT_EVALUATION_AFTER_FIRST_ALGORITHM)
 				break;
 
-			finalizeDataset();
+			storeResults();
 
 			if (Settings.DEBUG_ABORT_CROSSVALIDATION_AFTER_FIRST_FOLD)
 				break;

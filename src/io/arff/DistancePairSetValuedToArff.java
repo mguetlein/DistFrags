@@ -67,9 +67,9 @@ public class DistancePairSetValuedToArff implements DistancePairArffWritable
 					else
 						res.append(";");
 					if ((int) d == d)
-						res.append((int) d);
+						res.append(d);
 					else
-						res.append((int) d);
+						res.append(d);
 				}
 				res.append("}'");
 				return res.toString();

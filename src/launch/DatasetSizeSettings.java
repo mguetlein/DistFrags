@@ -13,14 +13,23 @@ public class DatasetSizeSettings
 	private static final String DATASET_SIZE_SMALL = "dataset-small";
 	private static final String DATASET_SIZE_TINY = "dataset-tiny";
 
-	private static String[][] DATASET_SIZES = new String[][] { { "mouse_carcinogenicity_alt", DATASET_SIZE_MEDIUM },
-			{ "multi_cell_call_alt", DATASET_SIZE_MEDIUM }, { "rat_carcinogenicity_alt", DATASET_SIZE_BIG },
-			{ "salmonella_mutagenicity_alt", DATASET_SIZE_MEDIUM }, { "kierbl", DATASET_SIZE_TINY },
-			{ "nctrer", DATASET_SIZE_TINY }, { "cyp_2C9_inhibitor", DATASET_SIZE_MEDIUM },
-			{ "cyp_2D6_inhibitor", DATASET_SIZE_MEDIUM }, { "cyp_3A4_inhibitor", DATASET_SIZE_MEDIUM },
-			{ "cyp_2C9_substrate", DATASET_SIZE_MEDIUM }, { "cyp_2D6_substrate", DATASET_SIZE_MEDIUM },
-			{ "cyp_3A4_substrate", DATASET_SIZE_MEDIUM }, { "bbb_inhibitor", DATASET_SIZE_SMALL },
-			{ "bbb_substrate", DATASET_SIZE_SMALL } };
+	private static String[][] DATASET_SIZES = new String[][]
+	{
+	{ "mouse_carcinogenicity_alt", DATASET_SIZE_MEDIUM },
+	{ "multi_cell_call_alt", DATASET_SIZE_MEDIUM },
+	{ "rat_carcinogenicity_alt", DATASET_SIZE_BIG },
+	{ "salmonella_mutagenicity_alt", DATASET_SIZE_MEDIUM },
+	{ "kierbl", DATASET_SIZE_TINY },
+	{ "nctrer", DATASET_SIZE_TINY },
+	{ "cyp_2C9_inhibitor", DATASET_SIZE_MEDIUM },
+	{ "cyp_2D6_inhibitor", DATASET_SIZE_MEDIUM },
+	{ "cyp_3A4_inhibitor", DATASET_SIZE_MEDIUM },
+	{ "cyp_2C9_substrate", DATASET_SIZE_MEDIUM },
+	{ "cyp_2D6_substrate", DATASET_SIZE_MEDIUM },
+	{ "cyp_3A4_substrate", DATASET_SIZE_MEDIUM },
+	{ "bbb_inhibitor", DATASET_SIZE_SMALL },
+	{ "bbb_substrate", DATASET_SIZE_SMALL },
+	{ "bbb_inducer", DATASET_SIZE_TINY } };
 
 	public static void setCurrentDatasetSize(String datasetBaseName)
 	{

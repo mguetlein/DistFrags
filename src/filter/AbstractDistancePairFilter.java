@@ -38,8 +38,7 @@ public abstract class AbstractDistancePairFilter implements DistancePairFilter
 
 	public String toString()
 	{
-		return getNiceFilterName() + " (#num-fragments: " + numChosen + ", min-confidence: "
-				+ StringUtil.formatDouble(minConfidence) + ")";
+		return getNiceFilterName() + " (#num-fragments: " + numChosen + ", min-confidence: " + StringUtil.formatDouble(minConfidence) + ")";
 	}
 
 	@Override
@@ -82,7 +81,28 @@ public abstract class AbstractDistancePairFilter implements DistancePairFilter
 			if (i >= maxNumPairs)
 				break;
 
+			// if (p.getDistancePairName(ordering[i]).matches("N.*-.*O"))
+			// {
 			distancePairs.add(ordering[i]);
+			// }
+			//
+			// System.out.println(p.getDistancePairName(ordering[i]));
+			// System.out.println(ordering[i]);
+			// Set<Integer> set = p.getMoleculesForDistancePair(ordering[i]);
+			// for (Integer m : set)
+			// {
+			// List<Double> dis = p.getDistances(ordering[i], m);
+			// System.out.print(d.getMoleculeSmiles(m) + " ");
+			// for (Double double1 : dis)
+			// {
+			// System.out.print(double1 + " ");
+			// }
+			// System.out.println();
+			// }
+			// System.out.println();
+			// }
+			// if (p.getDistancePairName(ordering[i]).length() < 15) // startsWith("O<"))
+			// distancePairs.add(ordering[i]);
 		}
 
 		numChosen = distancePairs.size();

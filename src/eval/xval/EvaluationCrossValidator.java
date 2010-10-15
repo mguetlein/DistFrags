@@ -5,7 +5,7 @@ import io.Status;
 import java.io.File;
 
 import launch.Settings;
-import weka.core.KnnDebug;
+import weka.core.old.KnnDebug;
 import data.util.CrossValidationData;
 import eval.DefaultWekaEvaluation;
 import eval.ResultHandler;
@@ -65,7 +65,13 @@ public class EvaluationCrossValidator extends AbstractCrossValidator
 	}
 
 	@Override
-	protected void finalizeDataset()
+	protected boolean resultsExist()
+	{
+		return ResultHandler.getInstance().evalFileExists(cv.getDatasetBaseName(), cv.getFeatureArffName());
+	}
+
+	@Override
+	protected void storeResults()
 	{
 		if (!Settings.DEBUG_SKIP_EVALUATION)
 		{

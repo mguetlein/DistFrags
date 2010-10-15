@@ -53,7 +53,7 @@ public class MineDistancePairsCrossValidator extends AbstractCrossValidator
 	}
 
 	@Override
-	protected void finalizeDataset()
+	protected void storeResults()
 	{}
 
 	@Override

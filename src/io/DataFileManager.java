@@ -30,38 +30,72 @@ import filter.Filter;
 public class DataFileManager
 {
 
-	private final static String[] dataDirectories = new String[] { /* "/results/distance/data/", */"/data/cpdb/",
-			"/data/cpdbdata/", "/data/various/", "/data/estrogen/", "/data/bbb/", "/data/cyp/" };
+	private final static String[] dataDirectories = new String[]
+	{ /* "/results/distance/data/", */"/data/cpdb/", "/data/cpdbdata/", "/data/various/", "/data/estrogen/", "/data/bbb/", "/data/cyp/" };
 
-	public static final String[] DATASETS = new String[] { "mouse_300", "mouse_200", "AK_Mouse", "AK_MultiCellCall",
-			"AK_Rat", "AK_SingleCellCall" };
+	public static final String[] DATASETS = new String[]
+	{ "mouse_300", "mouse_200", "AK_Mouse", "AK_MultiCellCall", "AK_Rat", "AK_SingleCellCall" };
 
-	public static final String[] CPDB_DATASETS = new String[] { "hamster_carcinogenicity", "hamster_female_carcinogenicity",
-			"hamster_male_carcinogenicity", "mouse_carcinogenicity", "mouse_female_carcinogenicity",
-			"mouse_male_carcinogenicity", "multi_cell_call", "rat_carcinogenicity", "rat_female_carcinogenicity",
-			"rat_male_carcinogenicity", "salmonella_mutagenicity", "single_cell_call" };
+	public static final String[] CPDB_DATASETS = new String[]
+	{ "hamster_carcinogenicity", "hamster_female_carcinogenicity", "hamster_male_carcinogenicity", "mouse_carcinogenicity",
+			"mouse_female_carcinogenicity", "mouse_male_carcinogenicity", "multi_cell_call", "rat_carcinogenicity",
+			"rat_female_carcinogenicity", "rat_male_carcinogenicity", "salmonella_mutagenicity", "single_cell_call" };
 
-	public static final String[] CPDB_ALT_DATASETS = new String[] { "mouse_carcinogenicity_alt", "multi_cell_call_alt",
-			"rat_carcinogenicity_alt", "salmonella_mutagenicity_alt" };
+	public static final String[] CPDB_ALT_DATASETS = new String[]
+	{ "mouse_carcinogenicity_alt", "multi_cell_call_alt", "rat_carcinogenicity_alt", "salmonella_mutagenicity_alt" };
 
-	public static final String[] ESTROGEN_DATASETS = new String[] { "kierbl", "nctrer" };
+	public static final String[] ESTROGEN_DATASETS = new String[]
+	{ "kierbl", "nctrer" };
+
+	public static final String[] NCTRER = new String[]
+	{ "nctrer" };
+
+	public static final String[] KIERBL = new String[]
+	{ "kierbl" };
 
 	public static final String[] BENCHMARK_DATASETS = ArrayUtil.concat(CPDB_ALT_DATASETS, ESTROGEN_DATASETS);
 
-	public static final String[] BBB_DATASETS = new String[] { "bbb_inhibitor", /* "bbb_inducer", */"bbb_substrate" };
+	public static final String[] BBB_DATASETS = new String[]
+	{ "bbb_inhibitor",
+	// "bbb_inducer",
+			"bbb_substrate" };
 
-	public static final String[] CYP_DATASETS = new String[] { "cyp_2C9_inhibitor", "cyp_2D6_inhibitor",
-			"cyp_3A4_inhibitor", "cyp_2C9_substrate", "cyp_2D6_substrate", "cyp_3A4_substrate" };
+	public static final String[] BBB_INHIBITOR = new String[]
+	{ "bbb_inhibitor" };
+
+	public static final String[] BBB_SUBSTRATE = new String[]
+	{ "bbb_substrate" };
+
+	public static final String[] CYP_DATASETS = new String[]
+	{ "cyp_2C9_inhibitor", "cyp_2D6_inhibitor", "cyp_3A4_inhibitor", "cyp_2C9_substrate", "cyp_2D6_substrate", "cyp_3A4_substrate" };
+
+	public static final String[] CYP_3A4_INHIBITOR = new String[]
+	{ "cyp_3A4_inhibitor" };
+	public static final String[] CYP_2C9_INHIBITOR = new String[]
+	{ "cyp_2C9_inhibitor" };
 
 	public static final String[] BINDING_DATASETS = ArrayUtil.concat(BBB_DATASETS, ESTROGEN_DATASETS, CYP_DATASETS);
 
-	public static final String[] SMALL_DATASET = new String[] { "nctrer" }; // , "bbb_inhibitor", "cyp_3A4_inhibitor" };
+	public static final String[] SMALL_DATASET = new String[]
+	{// "kierbl"
+	"nctrer"
+	// "bbb_inhibitor",
+	// "cyp_3A4_inhibitor"
+	};
+
+	public static final String[] SELECTED_DATASETS = new String[]
+	{ "cyp_2D6_inhibitor", "cyp_3A4_inhibitor", "cyp_2C9_substrate", "cyp_2D6_substrate", "cyp_3A4_substrate" };
 
 	// ------------------------------------------------------------------
 
-	private static String[][] NICE_NAMES = new String[][] { { "mouse_carcinogenicity_alt", "Mouse Carcinogenicity" },
-			{ "multi_cell_call_alt", "Multi Cell Call" }, { "rat_carcinogenicity_alt", "Rat Carcinogenicity" },
-			{ "salmonella_mutagenicity_alt", "Salmonella Mutaginicity" }, { "kierbl", "KIERBL" }, { "nctrer", "NCTRER" } };
+	private static String[][] NICE_NAMES = new String[][]
+	{
+	{ "mouse_carcinogenicity_alt", "Mouse Carcinogenicity" },
+	{ "multi_cell_call_alt", "Multi Cell Call" },
+	{ "rat_carcinogenicity_alt", "Rat Carcinogenicity" },
+	{ "salmonella_mutagenicity_alt", "Salmonella Mutaginicity" },
+	{ "kierbl", "KIERBL" },
+	{ "nctrer", "NCTRER" } };
 
 	public static String getSmilesFile(String dataset)
 	{
@@ -70,7 +104,8 @@ public class DataFileManager
 			String s = Settings.USER_HOME + dir + dataset + "/data/" + dataset + ".smi";
 			if (new File(s).exists())
 				return s;
-			// Status.WARN.println(Settings.USER_HOME + dir + dataset + "/data/" + dataset + ".smi");
+			// Status.WARN.println(Settings.USER_HOME + dir + dataset + "/data/"
+			// + dataset + ".smi");
 		}
 		throw new IllegalArgumentException("dataset not found: " + dataset);
 	}
@@ -82,7 +117,8 @@ public class DataFileManager
 			String s = Settings.USER_HOME + dir + dataset + "/data/" + dataset + ".class";
 			if (new File(s).exists())
 				return s;
-			// Status.WARN.println(Settings.USER_HOME + dir + dataset + "/data/" + dataset + ".class");
+			// Status.WARN.println(Settings.USER_HOME + dir + dataset + "/data/"
+			// + dataset + ".class");
 		}
 		throw new IllegalArgumentException("dataset not found: " + dataset);
 	}
@@ -115,8 +151,7 @@ public class DataFileManager
 
 	public static boolean isLegalFragmentType(String fragmentType)
 	{
-		return fragmentType != null
-				&& (fragmentType.equals(FRAGMENT_TYPE_LINFRAG) || fragmentType.equals(FRAGMENT_TYPE_FMINER));
+		return fragmentType != null && (fragmentType.equals(FRAGMENT_TYPE_LINFRAG) || fragmentType.equals(FRAGMENT_TYPE_FMINER));
 	}
 
 	// ---------------------------------------------------------------------------
@@ -131,7 +166,8 @@ public class DataFileManager
 		return fragmentName + ".dist";
 	}
 
-	// public static String getFragmentNameDistancePairFiltered(String distancePairName, DistancePairFilter filter)
+	// public static String getFragmentNameDistancePairFiltered(String
+	// distancePairName, DistancePairFilter filter)
 	// {
 	// return distancePairName + "." + filter.getName();
 	// }
@@ -140,35 +176,48 @@ public class DataFileManager
 
 	public static File getLinfragFile(String datasetName, String fragmentName)
 	{
-		// if (CPDB_DATASETS.contains(datasetName) && fragmentName.equals(FRAGMENT_TYPE_LINFRAG))
-		// return new File(Settings.USER_HOME + "/data/cpdb/" + datasetName + "/data/" + datasetName + "." + fragmentName);
+		// if (CPDB_DATASETS.contains(datasetName) &&
+		// fragmentName.equals(FRAGMENT_TYPE_LINFRAG))
+		// return new File(Settings.USER_HOME + "/data/cpdb/" + datasetName +
+		// "/data/" + datasetName + "." + fragmentName);
 		// else
-		return new File(Settings.USER_HOME + "/results/distance/data/" // + datasetName + "/data/"
+		return new File(Settings.USER_HOME + "/results/distance/data/" // +
+				// datasetName
+				// +
+				// "/data/"
 				+ datasetName + "." + fragmentName);
 	}
 
 	// public static File getLinfragFile(String datasetName, String linfragName)
 	// {
-	// return new File(Settings.USER_HOME+"/results/distance/data/" + datasetName + "/data/" + datasetName + "." + linfragName);
+	// return new File(Settings.USER_HOME+"/results/distance/data/" +
+	// datasetName + "/data/" + datasetName + "." + linfragName);
 	// }
 
-	// public static File getLinfragFile(String datasetName, String linfragName, String filterName)
+	// public static File getLinfragFile(String datasetName, String linfragName,
+	// String filterName)
 	// {
 	// assert (linfragName.startsWith(datasetName));
-	// return new File(Settings.USER_HOME+"/results/distance/data/" + datasetName + "/data/" + linfragName + "." + filterName);
+	// return new File(Settings.USER_HOME+"/results/distance/data/" +
+	// datasetName + "/data/" + linfragName + "." + filterName);
 	// }
 
 	public static File getDistancePairFile(String datasetName, String distancePairName)
 	{
 		// assert (linfragName.startsWith(datasetName));
-		return new File(Settings.USER_HOME + "/results/distance/data/" // + datasetName + "/data/"
+		return new File(Settings.USER_HOME + "/results/distance/data/" // +
+				// datasetName
+				// +
+				// "/data/"
 				+ datasetName + "." + distancePairName);
 	}
 
-	// public static File getDistancePairFile(String datasetName, String distPairName, String filterName)
+	// public static File getDistancePairFile(String datasetName, String
+	// distPairName, String filterName)
 	// {
 	// assert (distPairName.startsWith(datasetName));
-	// return new File(Settings.USER_HOME+"/results/distance/data/" + datasetName + "/data/" + distPairName + "." + filterName);
+	// return new File(Settings.USER_HOME+"/results/distance/data/" +
+	// datasetName + "/data/" + distPairName + "." + filterName);
 	// }
 
 	public static File getArffFile(String datasetName, String featureArffName)
@@ -178,11 +227,15 @@ public class DataFileManager
 		// arffString = "." + arffName;
 
 		// assert (featureName.startsWith(datasetName));
-		return new File(Settings.USER_HOME + "/results/distance/data/" // + datasetName + "/arff/"
+		return new File(Settings.USER_HOME + "/results/distance/data/" // +
+				// datasetName
+				// +
+				// "/arff/"
 				+ datasetName + "." + featureArffName + ".arff");
 	}
 
-	// public static File getCombinedArffFile(String datasetName, String featureName1, String featureName2)
+	// public static File getCombinedArffFile(String datasetName, String
+	// featureName1, String featureName2)
 	// {
 	// // // example 1:
 	// // // 1: dataset.cv.linfrag
@@ -196,12 +249,15 @@ public class DataFileManager
 	// //
 	// // // name: dataset.cv.1.linfrag.chisquare.2.linfrag.dist.fstatistics
 	// //
-	// // assert (featureName1.startsWith(datasetName) && featureName2.startsWith(datasetName));
+	// // assert (featureName1.startsWith(datasetName) &&
+	// featureName2.startsWith(datasetName));
 	//
-	// // String filename = datasetName + ".1" + featureName1.substring(datasetName.length()) + ".2"
+	// // String filename = datasetName + ".1" +
+	// featureName1.substring(datasetName.length()) + ".2"
 	// // + featureName2.substring(datasetName.length()) + ".arff";
 	//
-	// return new File(Settings.USER_HOME + "/results/distance/data/" + datasetName + "/arff/" + datasetName + "."
+	// return new File(Settings.USER_HOME + "/results/distance/data/" +
+	// datasetName + "/arff/" + datasetName + "."
 	// + featureName1 + "." + featureName2 + ".arff");
 	// }
 
@@ -220,7 +276,10 @@ public class DataFileManager
 
 	public static File getEvalFile(String datasetBaseName, String experimentName)
 	{
-		return new File(Settings.USER_HOME + "/results/distance/data/" // + datasetBaseName + "/eval/"
+		return new File(Settings.USER_HOME + "/results/distance/data/" // +
+				// datasetBaseName
+				// +
+				// "/eval/"
 				+ datasetBaseName + "." + experimentName + ".eval");
 	}
 

@@ -1,10 +1,13 @@
 package launch;
 
+import eval.xval.CrossValidationFactory;
+import filter.DistancePairFilter;
+import filter.FragmentFilter;
+import filter.KolmogorovSmirnovFilter;
 import io.DataFileManager;
 import io.Status;
 import util.MemoryUtil;
 import util.StringUtil;
-import eval.xval.CrossValidationFactory;
 
 public class DistancePairTest
 {
@@ -18,31 +21,48 @@ public class DistancePairTest
 		 * unset aromtic()
 		 */
 
+		// try
+		// {
+		// System.out.println("sleeping");
+		// Thread.sleep(30000);
+		// }
+		// catch (InterruptedException e)
+		// {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
 		// --- challenge -------------------------------------
 		// String dataset = "bbb_substrate";
 		// String dataset = "cyp_3A4_substrate";
 		// String dataset = "nctrer";
-		// MoleculeActivityData d = MoleculeDataIO.readFromSmilesAndClassFile(dataset, "/home/martin/documents/iems/ex10/data/"
-		// + dataset + ".smi", "/home/martin/documents/iems/ex10/data/" + dataset + ".class");
-		// FragmentMoleculeData f = FragmentFactory.mineFragments(DataFileManager.FRAGMENT_TYPE_LINFRAG, d);
-		// ArffWriter.writeToArffFile(new File("/home/martin/documents/iems/ex10/data/" + dataset + ".arff"),
+		// MoleculeActivityData d =
+		// MoleculeDataIO.readFromSmilesAndClassFile(dataset,
+		// "/home/martin/documents/iems/ex10/data/"
+		// + dataset + ".smi", "/home/martin/documents/iems/ex10/data/" +
+		// dataset + ".class");
+		// FragmentMoleculeData f =
+		// FragmentFactory.mineFragments(DataFileManager.FRAGMENT_TYPE_LINFRAG,
+		// d);
+		// ArffWriter.writeToArffFile(new
+		// File("/home/martin/documents/iems/ex10/data/" + dataset + ".arff"),
 		// new FragmentDataToArff(d, f));
-		// ArffCombiner.combine(new File("/home/martin/documents/iems/ex10/data/" + dataset + ".combined.arff"), new File[] {
-		// new File("/home/martin/documents/iems/ex10/data/" + dataset + ".DESC.arff"),
-		// new File("/home/martin/documents/iems/ex10/data/" + dataset + ".arff") }, new boolean[] { true, false });
+		// ArffCombiner.combine(new
+		// File("/home/martin/documents/iems/ex10/data/" + dataset +
+		// ".combined.arff"), new File[] {
+		// new File("/home/martin/documents/iems/ex10/data/" + dataset +
+		// ".DESC.arff"),
+		// new File("/home/martin/documents/iems/ex10/data/" + dataset +
+		// ".arff") }, new boolean[] { true, false });
 		// ------------------------------------------------
-		// CrossValidationFactory.printInfo(DataFileManager.BINDING_DATASETS);
-		//
-		// CrossValidationFactory.mineFragments(DataFileManager.BINDING_DATASETS, DataFileManager.FRAGMENT_TYPE_LINFRAG, null);
-		// CrossValidationFactory.mineFragments(DataFileManager.SMALL_DATASET, DataFileManager.FRAGMENT_TYPE_LINFRAG,
+
+		// for (String d : DataFileManager.BINDING_DATASETS)
+		// MoleculeFactory.getMoleculeActivityData(d);
+
 		// new ChiSquareFragmentFilter(100, 0.05));
-		// CrossValidationFactory.mineDistances(DataFileManager.BINDING_DATASETS, DataFileManager.FRAGMENT_TYPE_LINFRAG, null,
-		// false);
-		// CrossValidationFactory.mineDistances(DataFileManager.SMALL_DATASET, DataFileManager.FRAGMENT_TYPE_LINFRAG, null,
-		// false);// new
-		// TTestFilter(10000,
-		// 0.01),
-		// true);
+
+		// CrossValidationFactory.printInfo(DataFileManager.BINDING_DATASETS,
+		// DataFileManager.FRAGMENT_TYPE_LINFRAG, true);
+
 		// new KolmogorovSmirnovTest(100, 5000, 0.1), true);
 		//
 		// CrossValidationFactory.performFragmentCrossValidation(DataFileManager.SMALL_DATASET,
@@ -53,41 +73,58 @@ public class DistancePairTest
 		// DataFileManager.FRAGMENT_TYPE_LINFRAG, false);
 		// CrossValidationFactory.performDistancePairCrossValidation(DataFileManager.BINDING_DATASETS,
 		// DataFileManager.FRAGMENT_TYPE_LINFRAG);
-		CrossValidationFactory.performFragmentAndDistancePairCrossValidation(DataFileManager.SMALL_DATASET,
-				DataFileManager.FRAGMENT_TYPE_LINFRAG, false);
-		//
+
 		// ResultViews.printNumFeatures(DataFileManager.BINDING_DATASETS);
 		// ResultViews.printClassificationResults(DataFileManager.BINDING_DATASETS);
 		// ResultViews.printChiSquareClassificationComparison(DataFileManager.BINDING_DATASETS);
 		// ResultViews.printCombineClassificationComparison(DataFileManager.BINDING_DATASETS);
 		//
+
+		String fragmentType = DataFileManager.FRAGMENT_TYPE_LINFRAG;
+		FragmentFilter fraqFilter = null;
+		String[] datasets = DataFileManager.CYP_2C9_INHIBITOR;
+		// DistancePairFilter distFilter = new TTestFilter(2000, 0.01);
+		DistancePairFilter distFilter = new KolmogorovSmirnovFilter(2000, 0.01);
+
+		// CrossValidationFactory.printInfo(datasets, fragmentType, true);
+		// CrossValidationFactory.mineFragments(datasets, fragmentType, fraqFilter);
+		// CrossValidationFactory.mineDistances(datasets, fragmentType, distFilter, false);
+		CrossValidationFactory.performFragmentAndDistancePairCrossValidation(datasets, fragmentType, fraqFilter, distFilter, false);
+
 		System.gc();
-		Status.INFO.println("\n" + StringUtil.getTimeStamp(Settings.START_TIME) + ", mem-usage: "
-				+ MemoryUtil.getUsedMemoryString());
-		System.exit(0);
+		Status.INFO.println("\n" + StringUtil.getTimeStamp(Settings.START_TIME) + ", mem-usage: " + MemoryUtil.getUsedMemoryString());
+		// System.exit(0);
 	}
 	// public static void moleculeSize()
 	// {
-	// MoleculeActivityData d = MoleculeFactory.getMoleculeActivityData(DataFileManager.CPDB_DATASETS[11]);
-	// // FragmentIO.createFMinerFile(new File("/home/martin/tmp/fminer.out.5"), d);
+
+	// MoleculeActivityData d =
+	// MoleculeFactory.getMoleculeActivityData(DataFileManager.CPDB_DATASETS[11]);
+	// // FragmentIO.createFMinerFile(new File("/home/martin/tmp/fminer.out.5"),
+	// d);
 	// new MoleculeSizeViewer(d);
 	// }
 
 	// public static void cvInfo()
 	// {
-	// MoleculeActivityData d = MoleculeFactory.getMoleculeActivityData(DataFileManager.CPDB_DATASETS[0]);
-	// CrossValidationFactory.printInfo(d, 10, 1, true, DataFileManager.FRAGMENT_TYPE_LINFRAG);
+	// MoleculeActivityData d =
+	// MoleculeFactory.getMoleculeActivityData(DataFileManager.CPDB_DATASETS[0]);
+	// CrossValidationFactory.printInfo(d, 10, 1, true,
+	// DataFileManager.FRAGMENT_TYPE_LINFRAG);
 	// }
 
 	// public static void ak_datasets()
 	// {
-	// String ak[] = new String[] { "AK_Mouse", "AK_MultiCellCall", "AK_Rat", "AK_SingleCellCall" };
-	// String cpdb[] = new String[] { "mouse_carcinogenicity", "multi_cell_call", "rat_carcinogenicity", "single_cell_call" };
+	// String ak[] = new String[] { "AK_Mouse", "AK_MultiCellCall", "AK_Rat",
+	// "AK_SingleCellCall" };
+	// String cpdb[] = new String[] { "mouse_carcinogenicity",
+	// "multi_cell_call", "rat_carcinogenicity", "single_cell_call" };
 	//
 	// for (int i = 0; i < ak.length; i++)
 	// {
 	// MoleculeActivityData d = MoleculeFactory.getMoleculeActivityData(ak[i]);
-	// MoleculeActivityData d2 = MoleculeFactory.getMoleculeActivityData(cpdb[i]);
+	// MoleculeActivityData d2 =
+	// MoleculeFactory.getMoleculeActivityData(cpdb[i]);
 	//
 	// int match = 0;
 	// int differentAct = 0;
@@ -112,7 +149,8 @@ public class DistancePairTest
 	// }
 	// }
 	// }
-	// Status.INFO.println("matches: " + match + " different-act: " + differentAct + "\n");
+	// Status.INFO.println("matches: " + match + " different-act: " +
+	// differentAct + "\n");
 	// }
 	//
 	// Status.INFO.println();
@@ -121,7 +159,8 @@ public class DistancePairTest
 	// public static void cvTest()
 	// {
 	// Random r = new Random();
-	// MoleculeActivityData d = MoleculeFactory.getMoleculeActivityData(DataFileManager.ESTROGEN_DATASETS[1]);
+	// MoleculeActivityData d =
+	// MoleculeFactory.getMoleculeActivityData(DataFileManager.ESTROGEN_DATASETS[1]);
 	//
 	// String s = d.getMoleculeSmiles(r.nextInt(d.getNumMolecules()));
 	//
@@ -160,7 +199,8 @@ public class DistancePairTest
 	// String smilesFile = DataFileManager.getSmilesFile(datasetName);
 	// String classFile = DataFileManager.getClassFile(datasetName);
 	//
-	// MoleculeActivityData d = MoleculeFactory.getMoleculeActivityData(datasetName);
+	// MoleculeActivityData d =
+	// MoleculeFactory.getMoleculeActivityData(datasetName);
 	//
 	// int numFolds = 5;
 	//
@@ -181,16 +221,20 @@ public class DistancePairTest
 	// // Status.INFO.println(" " + j + " " + train.getMoleculeSmiles(j));
 	// // }
 	//
-	// FragmentMoleculeData trainFragments = FragmentFactory.mineFragments(trainData);
+	// FragmentMoleculeData trainFragments =
+	// FragmentFactory.mineFragments(trainData);
 	// Status.INFO.println();
 	//
-	// FragmentMoleculeData trainChiSquareFragments = FragmentFactory.applyChiSquareFilter(trainFragments, trainData);
+	// FragmentMoleculeData trainChiSquareFragments =
+	// FragmentFactory.applyChiSquareFilter(trainFragments, trainData);
 	// Status.INFO.println();
 	//
-	// DistancePairData trainPairs = DistancePairFactory.mineDistancePairs(trainData, trainFragments);
+	// DistancePairData trainPairs =
+	// DistancePairFactory.mineDistancePairs(trainData, trainFragments);
 	// Status.INFO.println();
 	//
-	// DistancePairData trainFStatisticsPairs = DistancePairFactory.applyFStatisticsFilter(trainPairs, trainData);
+	// DistancePairData trainFStatisticsPairs =
+	// DistancePairFactory.applyFStatisticsFilter(trainPairs, trainData);
 	// Status.INFO.println();
 	//
 	// // if (true == true)
@@ -202,16 +246,21 @@ public class DistancePairTest
 	// Status.INFO.println(testData);
 	// Status.INFO.println();
 	//
-	// FragmentMoleculeData testFragments = FragmentFactory.checkFragments(testData, trainFragments);
+	// FragmentMoleculeData testFragments =
+	// FragmentFactory.checkFragments(testData, trainFragments);
 	// Status.INFO.println();
 	//
-	// FragmentMoleculeData testChiSquareFragments = FragmentFactory.checkFragments(testData, trainChiSquareFragments);
+	// FragmentMoleculeData testChiSquareFragments =
+	// FragmentFactory.checkFragments(testData, trainChiSquareFragments);
 	// Status.INFO.println();
 	//
-	// DistancePairData testPairs = DistancePairFactory.checkDistancePairs(testData, testFragments, trainPairs);
+	// DistancePairData testPairs =
+	// DistancePairFactory.checkDistancePairs(testData, testFragments,
+	// trainPairs);
 	// Status.INFO.println();
 	//
-	// DistancePairData testFStatisticsPairs = DistancePairFactory.checkDistancePairs(testData, testFragments,
+	// DistancePairData testFStatisticsPairs =
+	// DistancePairFactory.checkDistancePairs(testData, testFragments,
 	// trainFStatisticsPairs);
 	// Status.INFO.println();
 	//
@@ -220,43 +269,50 @@ public class DistancePairTest
 	//
 	// // new DistancePairDataBrowser(testData, testFStatisticsPairs);
 	//
-	// // FragmentMoleculeData testFragments = FeatureGeneratorFactory.mineFragments(testData, trainFragments);
+	// // FragmentMoleculeData testFragments =
+	// FeatureGeneratorFactory.mineFragments(testData, trainFragments);
 	// // Status.INFO.println(testFragments.toString());
 	// // Status.INFO.println(testFragments.getAdditionalInfo(trainData));
 	// //
-	// // DistancePairData testPairs = DistancePairMiner.mineDistancePairs(testData, testFragments, trainPairs);
+	// // DistancePairData testPairs =
+	// DistancePairMiner.mineDistancePairs(testData, testFragments, trainPairs);
 	// // Status.INFO.println(testPairs.toString());
 	//
 	// // Status.INFO.println("\nTest data");
 	// // for (int j = 0; j < testData.getNumMolecules(); j++)
 	// // {
-	// // Status.INFO.println(" " + j + " " + testData.getMoleculeSmiles(j) + " " + testData.getMoleculeActivity(j));
+	// // Status.INFO.println(" " + j + " " + testData.getMoleculeSmiles(j) +
+	// " " + testData.getMoleculeActivity(j));
 	// // }
 	// // Status.INFO.println();
 	//
 	// // Evaluation.eval(train, chiSquare, test);
 	//
 	// Status.INFO.println("\nAll linear fragments\n");
-	// FragmentEvaluation eval = new FragmentEvaluation(trainData, trainFragments, testData);
+	// FragmentEvaluation eval = new FragmentEvaluation(trainData,
+	// trainFragments, testData);
 	// eval.setTestFragments(testFragments);
 	// eval.evaluate();
 	// Status.INFO.println();
 	//
 	// Status.INFO.println("\nChi square fragments\n");
-	// FragmentEvaluation eval2 = new FragmentEvaluation(trainData, trainChiSquareFragments, testData);
+	// FragmentEvaluation eval2 = new FragmentEvaluation(trainData,
+	// trainChiSquareFragments, testData);
 	// eval.setTestFragments(testChiSquareFragments);
 	// eval2.evaluate();
 	// Status.INFO.println();
 	//
 	// Status.INFO.println("\nAll distance pairs\n");
-	// DistancePairEvaluation eval3 = new DistancePairEvaluation(trainData, trainFragments, trainPairs, testData);
+	// DistancePairEvaluation eval3 = new DistancePairEvaluation(trainData,
+	// trainFragments, trainPairs, testData);
 	// eval3.setTestFragments(testFragments);
 	// eval3.setTestDistancePairs(testPairs);
 	// eval3.evaluate();
 	// Status.INFO.println();
 	//
 	// Status.INFO.println("\nFstatistics distance pairs\n");
-	// DistancePairEvaluation eval4 = new DistancePairEvaluation(trainData, trainFragments, trainFStatisticsPairs,
+	// DistancePairEvaluation eval4 = new DistancePairEvaluation(trainData,
+	// trainFragments, trainFStatisticsPairs,
 	// testData);
 	// eval4.setTestFragments(testFragments);
 	// eval4.setTestDistancePairs(testFStatisticsPairs);
@@ -264,7 +320,8 @@ public class DistancePairTest
 	// Status.INFO.println();
 	//
 	// Status.INFO.println("\nChi square fragments and Fstatistics distance pairs\n");
-	// FragmentAndDistancePairEvaluation eval5 = new FragmentAndDistancePairEvaluation(trainData,
+	// FragmentAndDistancePairEvaluation eval5 = new
+	// FragmentAndDistancePairEvaluation(trainData,
 	// trainChiSquareFragments, trainFStatisticsPairs, testData);
 	// eval5.setTestFragments(testChiSquareFragments);
 	// eval5.setTestDistancePairs(testFStatisticsPairs);
@@ -289,8 +346,11 @@ public class DistancePairTest
 	// String smilesFile = DataFileManager.getSmilesFile(datasetName);
 	// String classFile = DataFileManager.getClassFile(datasetName);
 	//
-	// MoleculeActivityData d = MoleculeFactory.readFromSmilesAndClassFile(datasetName, smilesFile, classFile);
-	// // MoleculeData d = MoleculeDataReader.readFromSmilesFile(datasetName, smilesFile);
+	// MoleculeActivityData d =
+	// MoleculeFactory.readFromSmilesAndClassFile(datasetName, smilesFile,
+	// classFile);
+	// // MoleculeData d = MoleculeDataReader.readFromSmilesFile(datasetName,
+	// smilesFile);
 	//
 	// int numFolds = 5;
 	// CrossValidation cv = new CrossValidation(d, numFolds, 3);
@@ -308,7 +368,8 @@ public class DistancePairTest
 	//
 	// FragmentMoleculeData f = FragmentFactory.mineFragments(train);
 	//
-	// FragmentMoleculeData chiSquare = FragmentFactory.applyChiSquareFilter(f, train);
+	// FragmentMoleculeData chiSquare = FragmentFactory.applyChiSquareFilter(f,
+	// train);
 	//
 	// Status.INFO.print("test  " + (i + 1) + " ");
 	// MoleculeActivityData test = cv.getMoleculeActivityData(i, true);
@@ -325,7 +386,8 @@ public class DistancePairTest
 	// TrainTestEvaluation eval = new FragmentDataEvaluation(train, f, test);
 	// eval.evaluate();
 	//
-	// TrainTestEvaluation eval2 = new FragmentDataEvaluation(train, chiSquare, test);
+	// TrainTestEvaluation eval2 = new FragmentDataEvaluation(train, chiSquare,
+	// test);
 	// eval2.evaluate();
 	//
 	// // if (true == true)
@@ -335,11 +397,14 @@ public class DistancePairTest
 
 	// public static void distanceArffTest()
 	// {
-	// MoleculeActivityData d = MoleculeFactory.getMoleculeActivityData(DataFileManager.CPDB_DATASETS[0]);
+	// MoleculeActivityData d =
+	// MoleculeFactory.getMoleculeActivityData(DataFileManager.CPDB_DATASETS[0]);
 	//
-	// FragmentMoleculeData f = FragmentFactory.mineFragments(DataFileManager.FRAGMENT_TYPE_LINFRAG, d);
+	// FragmentMoleculeData f =
+	// FragmentFactory.mineFragments(DataFileManager.FRAGMENT_TYPE_LINFRAG, d);
 	//
-	// // String arffFile = DataFileManager.getArffFile(datasetName, f.getFragmentInfo());
+	// // String arffFile = DataFileManager.getArffFile(datasetName,
+	// f.getFragmentInfo());
 	//
 	// // if (!new File(arffFile).exists())
 	// // ArffWriterFactory.writeToArff(arffFile, d, f);
@@ -352,7 +417,8 @@ public class DistancePairTest
 	//
 	// new DistancePairDataBrowser(d, p2);
 
-	// String arffFile2 = DataFileManager.getArffFile(datasetName, p.getFragmentInfo());
+	// String arffFile2 = DataFileManager.getArffFile(datasetName,
+	// p.getFragmentInfo());
 
 	// if (!new File(arffFile2).exists())
 	// ArffWriterFactory.writeToArff(d, p);
@@ -367,18 +433,21 @@ public class DistancePairTest
 	//
 	// String datasetName = DataFileManager.getDatasetNameCpdb(numDataset);
 	//
-	// MoleculeActivityData d = MoleculeFactory.getMoleculeActivityData(datasetName);
+	// MoleculeActivityData d =
+	// MoleculeFactory.getMoleculeActivityData(datasetName);
 	//
 	// FragmentMoleculeData f = FragmentFactory.mineFragments(d);
 	//
-	// // String arffFile = DataFileManager.getArffFile(datasetName, f.getFragmentInfo());
+	// // String arffFile = DataFileManager.getArffFile(datasetName,
+	// f.getFragmentInfo());
 	//
 	// // if (!new File(arffFile).exists())
 	// // ArffWriterFactory.writeToArff(d, f);
 	//
 	// FragmentMoleculeData f2 = FragmentFactory.applyChiSquareFilter(f, d);
 	//
-	// // String arffFile2 = DataFileManager.getArffFile(datasetName, f2.getFragmentInfo());
+	// // String arffFile2 = DataFileManager.getArffFile(datasetName,
+	// f2.getFragmentInfo());
 	//
 	// // if (!new File(arffFile2).exists())
 	// // ArffWriterFactory.writeToArff(d, f2);

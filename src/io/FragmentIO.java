@@ -23,6 +23,9 @@ import data.MoleculeData;
 
 public class FragmentIO
 {
+	public static final File LINFRAG_DIR = new File(Settings.USER_HOME + "/software/lazar-core");
+	
+	
 	public static void checkFragmentsExternOB(File testFragmentFile, MoleculeData data, FragmentData fragments)
 	{
 		if (!Settings.isModeExternOpenBabel())
@@ -35,7 +38,7 @@ public class FragmentIO
 		File tempSmilesFile = MoleculeDataIO.createTmpSmilesFile(data);
 		File tempFragmentFile = createTmpFragmentFile(data.getDatasetName(), fragments, false);
 
-		String command = Settings.USER_HOME + "/software/OBDistance/OBDistance -s " + tempSmilesFile.getAbsolutePath()
+		String command = DistancePairDataIO.OB_DISTANCE_DIR+"/OBDistance -s " + tempSmilesFile.getAbsolutePath()
 				+ " -f " + tempFragmentFile + " -p -a";
 
 		ExternalTool.run("OBDistance", testFragmentFile, null, command);
@@ -98,9 +101,9 @@ public class FragmentIO
 		File tempSmilesFile = MoleculeDataIO.createTmpSmilesFile(d);
 
 		DatasetSizeSettings.setCurrentDatasetSize(d.getDatasetBaseName());
-		String command = Settings.USER_HOME + "/software/linfrag/linfrag -f " + DatasetSizeSettings.MIN_FREQUENCY + " -s "
-				+ tempSmilesFile.getAbsolutePath() + " -a " + Settings.USER_HOME + "/software/linfrag/elements.txt";
-
+		String command = LINFRAG_DIR.getAbsolutePath()+"/linfrag -f " + DatasetSizeSettings.MIN_FREQUENCY + " -s "
+				+ tempSmilesFile.getAbsolutePath() + " -a " + LINFRAG_DIR.getAbsolutePath()+"/data/elements.txt";
+ 
 		ExternalTool.run("linfrag", fragmentFile, ".*LEVEL.*", command);
 
 		tempSmilesFile.delete();

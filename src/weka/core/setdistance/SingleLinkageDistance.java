@@ -1,8 +1,7 @@
 package weka.core.setdistance;
 
-import weka.core.AbstractStringSetDistanceFunction;
 
-public class SingleLinkageDistance extends AbstractStringSetDistanceFunction
+public class SingleLinkageDistance implements SetDistance
 {
 	@Override
 	public double distance(double matrix[][])

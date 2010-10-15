@@ -16,12 +16,12 @@ public class ExternalTool
 		run(processName, stdOutfile, errorOutMatch, command, null, null);
 	}
 
-	public static void run(final String processName, File stdOutfile, final String errorOutMatch, String command,
-			String env[], File dir)
+	public static void run(final String processName, File stdOutfile, final String errorOutMatch, String command, String env[], File dir)
 	{
 		try
 		{
 			Status.addIndent();
+			Status.INFO.println(command);
 
 			final File tmpStdOutfile = new File(stdOutfile + ".tmp");
 			final long starttime = new Date().getTime();
@@ -113,8 +113,7 @@ public class ExternalTool
 		catch (Exception e)
 		{
 			e.printStackTrace();
-		}
-		finally
+		} finally
 		{
 			Status.remIndent();
 		}

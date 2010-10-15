@@ -1,14 +1,12 @@
 package data;
 
-import hep.aida.util.comparison.ComparisonData;
-import hep.aida.util.comparison.KolmogorovSmirnovComparisonAlgorithm;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
+
+import jsc.independentsamples.SmirnovTest;
 
 import org.apache.commons.math.stat.inference.TTestImpl;
 import org.apache.commons.math.stat.inference.TestUtils;
@@ -114,8 +112,12 @@ public class DistancePairDataImpl extends FragmentDataImpl implements DistancePa
 
 	public String toString()
 	{
-		return "DistancePairData '" + fragmentName + "' (#fragments: " + fragments.size() + ", #distance-pairs: "
-				+ distancePairs.size() /* +", #only-zero-distances " + numDistancesAllZero */+ ")";
+		return "DistancePairData '" + fragmentName + "' (#fragments: " + fragments.size() + ", #distance-pairs: " + distancePairs.size() /*
+																																		 * +", #only-zero-distances "
+																																		 * +
+																																		 * numDistancesAllZero
+																																		 */
+				+ ")";
 	}
 
 	@Override
@@ -195,8 +197,7 @@ public class DistancePairDataImpl extends FragmentDataImpl implements DistancePa
 		MinMaxAvg moleculesPerDistancePair = MinMaxAvg.minMaxAvg(moleculesPerDistancePairCount, moleculesPerPairZeroCount);
 		moleculesPerDistancePair.addToResult(set, "mol-per-pair");
 
-		MinMaxAvg distancePairsPerMolecule = MinMaxAvg
-				.minMaxAvg(distancePairPerMoleculeCount, distancesPerMoleculeZeroCount);
+		MinMaxAvg distancePairsPerMolecule = MinMaxAvg.minMaxAvg(distancePairPerMoleculeCount, distancesPerMoleculeZeroCount);
 		distancePairsPerMolecule.addToResult(set, "pair-per-mol");
 
 		MinMaxAvg distancesPerDistancePair = MinMaxAvg.minMaxAvg(distancesPerDistancePairCount, distancesPerPairZeroCount);
@@ -312,22 +313,23 @@ public class DistancePairDataImpl extends FragmentDataImpl implements DistancePa
 			if (acts == null || acts.get(0).length < 2 || acts.get(1).length < 2)
 				return 1;
 
-			KolmogorovSmirnovComparisonAlgorithm test = new KolmogorovSmirnovComparisonAlgorithm();
-			double wa[] = new double[acts.get(0).length];
-			Arrays.fill(wa, 1);
-			ComparisonData a = new ComparisonData(acts.get(0), wa, ComparisonData.UNBINNED_DATA);
-			double wi[] = new double[acts.get(1).length];
-			Arrays.fill(wi, 1);
-			ComparisonData i = new ComparisonData(acts.get(1), wi, ComparisonData.UNBINNED_DATA);
-			double p = test.quality(a, i);
+			// KolmogorovSmirnovComparisonAlgorithm test = new KolmogorovSmirnovComparisonAlgorithm();
+			// double wa[] = new double[acts.get(0).length];
+			// Arrays.fill(wa, 1);
+			// ComparisonData a = new ComparisonData(acts.get(0), wa, ComparisonData.UNBINNED_DATA);
+			// double wi[] = new double[acts.get(1).length];
+			// Arrays.fill(wi, 1);
+			// ComparisonData i = new ComparisonData(acts.get(1), wi, ComparisonData.UNBINNED_DATA);
+			// double p = test.quality(a, i);
+			// if (Double.isNaN(p))
+			// return 1;
+			// return p;
 
-			// SmirnovTest test = new SmirnovTest(acts.get(0), acts.get(1));
-			// double p = test.getTestStatistic();
-
-			if (Double.isNaN(p))
-				return 1;
-
-			return p;
+			SmirnovTest test = new SmirnovTest(acts.get(0), acts.get(1));
+			double p = test.getTestStatistic();
+			assert (!Double.isNaN(p));
+			assert p >= 0 && p <= 1;
+			return 1 - p;
 		}
 		catch (Exception e)
 		{

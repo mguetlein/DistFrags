@@ -18,6 +18,7 @@ import data.MoleculeDataImpl;
 
 public class MoleculeDataIO
 {
+
 	public static File createTmpClassFile(MoleculeActivityData d)
 	{
 		try
@@ -109,8 +110,13 @@ public class MoleculeDataIO
 			BufferedReader r = new BufferedReader(new FileReader(file));
 			String s;
 
+			int skip = 0;
+			int total = 0;
+
 			while ((s = r.readLine()) != null)
 			{
+				total++;
+
 				int id = -1;
 				String smile = null;
 
@@ -130,6 +136,11 @@ public class MoleculeDataIO
 					// System.out.println(smile);
 				}
 
+				if (smile.equals("O=C1NC(=O)N(c2nc[nH](c12)C)C") || smile.equals("O=C(OCCCC)C(=O)Nc1cccc(c1)c2nn[nH]n2"))
+					continue;
+				// if (smile.contains("n"))
+				// continue;
+
 				if (id == -1 || smile == null)
 					throw new IllegalStateException("wrong smiles file format '" + smilesFile + "': '" + s + "', id: '" + id
 							+ "', smiles: '" + smile + "'");
@@ -137,6 +148,7 @@ public class MoleculeDataIO
 				if (smile.length() == 0)
 					Status.WARN.println("empty smiles " + smile);
 
+				// smile = smile.replace("@", "");
 				if (res.ids.contains(id))
 					throw new IllegalStateException("double id");
 				res.ids.add(id);
@@ -147,6 +159,9 @@ public class MoleculeDataIO
 
 				res.idToSmiles.put(id, smile);
 			}
+
+			if (skip > 0)
+				Status.WARN.println("skipped " + skip + "/" + total);
 
 			// Status.INFO.println("done");
 
@@ -216,8 +231,8 @@ public class MoleculeDataIO
 				}
 
 				if (id == -1 || endpoint == null || classValue == null)
-					throw new IllegalStateException("wrong class file format, " + classFile + ": '" + s + "', id:" + id
-							+ ", endpoint:" + endpoint + ", act:" + classValue);
+					throw new IllegalStateException("wrong class file format, " + classFile + ": '" + s + "', id:" + id + ", endpoint:"
+							+ endpoint + ", act:" + classValue);
 
 				if (idToActivity.containsKey(id))
 					throw new IllegalStateException("double activity for id: " + id);

@@ -1,8 +1,6 @@
 package weka.core.setdistance;
 
-import weka.core.AbstractStringSetDistanceFunction;
-
-public class HausdorffDistance extends AbstractStringSetDistanceFunction
+public class HausdorffDistance implements SetDistance
 {
 	@Override
 	public double distance(double matrix[][])
@@ -34,7 +32,7 @@ public class HausdorffDistance extends AbstractStringSetDistanceFunction
 		if (maxMinB > res)
 			res = maxMinB;
 
-		assert res == (int) res;
+		// assert res == (int) res;
 		return res;
 	}
 

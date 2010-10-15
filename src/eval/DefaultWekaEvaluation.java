@@ -15,17 +15,21 @@ import launch.Settings;
 import util.StopWatchUtil;
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
+import weka.classifiers.InformativeClassifier;
 import weka.classifiers.evaluation.NominalPrediction;
 import weka.classifiers.evaluation.Prediction;
 import weka.classifiers.trees.J48;
+import weka.classifiers.trees.SubsetId3;
 import weka.core.FastVector;
+import weka.core.IBkDebbuger;
 import weka.core.Instance;
 import weka.core.Instances;
-import weka.core.KnnDebug;
+import weka.core.old.KnnDebug;
 import eval.WekaClassifierFactory.NamedClassifier;
 
 public class DefaultWekaEvaluation implements WekaEvaluation
 {
+	public static int DEBUG_NUM_TEST_INSTANCES;
 
 	protected List<WekaClassifierFactory.NamedClassifier> classifiers;
 
@@ -70,8 +74,8 @@ public class DefaultWekaEvaluation implements WekaEvaluation
 
 			Status.INFO.println(Status.INDENT + "Training: instances: " + trainData.numInstances() + ". attributes: "
 					+ trainData.numAttributes());
-			Status.INFO.println(Status.INDENT + "Test: instances: " + testData.numInstances() + ". attributes: "
-					+ testData.numAttributes());
+			Status.INFO
+					.println(Status.INDENT + "Test: instances: " + testData.numInstances() + ". attributes: " + testData.numAttributes());
 
 			assert (trainData.numAttributes() == testData.numAttributes());
 
@@ -83,32 +87,53 @@ public class DefaultWekaEvaluation implements WekaEvaluation
 
 				Evaluation eval = new Evaluation(trainData)
 				{
-					public double evaluateModelOnceAndRecordPrediction(Classifier classifier, Instance instance)
-							throws Exception
+					public double evaluateModelOnceAndRecordPrediction(Classifier classifier, Instance instance) throws Exception
 					{
 						KnnDebug.SinglePredictionActualClassValue = (int) instance.classValue();
-						return super.evaluateModelOnceAndRecordPrediction(classifier, instance);
+						double p = super.evaluateModelOnceAndRecordPrediction(classifier, instance);
+						// System.out.println("prediciton: "
+						// + ((NominalPrediction)
+						// m_Predictions.lastElement()).distribution()[1]);
+						return p;
 					}
 				};
 
 				Status.INFO.println(Status.INDENT + "Building classifier " + clazzy.name + " with training data");
 
 				long time = StopWatchUtil.getCpuTime();
+
+				if (Settings.DEBUG_KNN_ANALYZE)
+					IBkDebbuger.INSTANCE = new IBkDebbuger(testData.size(), trainData);
+
 				clazzy.classifier.buildClassifier(trainData);
+
+				if (clazzy.classifier instanceof InformativeClassifier)
+					ResultHandler.getInstance().set(ResultHandler.PROPERTY_INFO, ((InformativeClassifier) clazzy.classifier).getInfo());
+
 				ResultHandler.getInstance().set(ResultHandler.PROPERTY_MODEL_BUILD_TIME, StopWatchUtil.getCpuTime() - time);
 				// Status.INFO.println("done");
 
+				if (clazzy.classifier instanceof SubsetId3)
+					Status.INFO.println(clazzy.classifier.toString());
+
 				if (Settings.DEBUG_KNN_PRINT_TESTSET_PREDICT)
-				{
 					KnnDebug.TestPredictions.clear();
-				}
 
 				Status.INFO.println(Status.INDENT + "Evaluating testdata");
 
 				time = StopWatchUtil.getCpuTime();
+				DEBUG_NUM_TEST_INSTANCES = testData.size();
+				Status.addIndent();
+				// StopWatchUtil.start(clazzy.name);
 				eval.evaluateModel(clazzy.classifier, testData);
-				ResultHandler.getInstance()
-						.set(ResultHandler.PROPERTY_MODEL_PREDICT_TIME, StopWatchUtil.getCpuTime() - time);
+				// StopWatchUtil.stop(clazzy.name);
+				// StopWatchUtil.print();
+
+				if (Settings.DEBUG_KNN_ANALYZE)
+					IBkDebbuger.INSTANCE.analyze();
+
+				Status.remIndent();
+				ResultHandler.getInstance().set(ResultHandler.PROPERTY_MODEL_PREDICT_TIME, StopWatchUtil.getCpuTime() - time);
 				// Status.INFO.println("done");
 
 				if (Settings.DEBUG_KNN_PRINT_TESTSET_PREDICT)
@@ -134,8 +159,7 @@ public class DefaultWekaEvaluation implements WekaEvaluation
 
 				ResultHandler.getInstance().set(ResultHandler.PROPERTY_EVAL_AUC,
 						new Double[] { eval.areaUnderROC(0), eval.areaUnderROC(1) });
-				ResultHandler.getInstance().set(ResultHandler.PROPERTY_EVAL_F_MEASURE,
-						new Double[] { eval.fMeasure(0), eval.fMeasure(1) });
+				ResultHandler.getInstance().set(ResultHandler.PROPERTY_EVAL_F_MEASURE, new Double[] { eval.fMeasure(0), eval.fMeasure(1) });
 
 				ResultHandler.getInstance().set(ResultHandler.PROPERTY_NUM_TP,
 						new Double[] { eval.numTruePositives(0), eval.numTruePositives(1) });
@@ -210,10 +234,12 @@ public class DefaultWekaEvaluation implements WekaEvaluation
 	// try
 	// {
 	// Status.INFO.println("reading arff file: " + arffFile);
-	// Instances data = new Instances(new BufferedReader(new FileReader(arffFile)));
+	// Instances data = new Instances(new BufferedReader(new
+	// FileReader(arffFile)));
 	// data.setClassIndex(data.numAttributes() - 1);
 	//
-	// Status.INFO.println("instances: " + data.numInstances() + ". attributes: " + data.numAttributes());
+	// Status.INFO.println("instances: " + data.numInstances() +
+	// ". attributes: " + data.numAttributes());
 	//
 	// // J48 clazzy = new J48();
 	// // clazzy.setUnpruned(true);
@@ -223,12 +249,14 @@ public class DefaultWekaEvaluation implements WekaEvaluation
 	//
 	// Evaluation eval = new Evaluation(data);
 	//
-	// // Status.INFO.print("building classifier " + clazzy.getClass().getSimpleName() + " ... ");
+	// // Status.INFO.print("building classifier " +
+	// clazzy.getClass().getSimpleName() + " ... ");
 	// // clazzy.buildClassifier(data);
 	// // Status.INFO.println("done");
 	// // eval.evaluateModel(clazzy, data);
 	//
-	// Status.INFO.println("CV with classifier " + clazzy.getClass().getSimpleName());
+	// Status.INFO.println("CV with classifier " +
+	// clazzy.getClass().getSimpleName());
 	// eval.crossValidateModel(clazzy, data, 3, new Random(1));
 	//
 	// Status.INFO.println(eval.toSummaryString());

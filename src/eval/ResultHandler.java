@@ -60,21 +60,20 @@ public class ResultHandler
 	public static final int PROPERTY_CLASS_VALUES = 26;
 	public static final int PROPERTY_PREDICTION_VALUES = 27;
 
-	private static final String[] PROPS = { "Dataset", "Features", "Fold", "Algorithm", "Acc", "#Test", "#Train", "#Attrib",
-			"Sens", "Spec", "Unclass", "Seed", "#Folds", "Strat", "#Instances", "#Actives", "Endpoint", "AUC", "fMeasure",
-			"Info", "BuildT", "PredictT", "#TruePos", "#FalsePos", "#TrueNeg", "#FalseNeg", "Class", "Prediction" };
+	private static final String[] PROPS = { "Dataset", "Features", "Fold", "Algorithm", "Acc", "#Test", "#Train", "#Attrib", "Sens",
+			"Spec", "Unclass", "Seed", "#Folds", "Strat", "#Instances", "#Actives", "Endpoint", "AUC", "fMeasure", "Info", "BuildT",
+			"PredictT", "#TruePos", "#FalsePos", "#TrueNeg", "#FalseNeg", "Class", "Prediction" };
 
 	public static String getPropertyString(int prop)
 	{
 		return PROPS[prop];
 	}
 
-	private static final String[] NICE_PROPS = { "Dataset Name", "Feature Type", "Fold", "Algorithm", "Accuracy",
-			"Num Test Instances", "Num Train Instances", "Num Features", "Sensitivity", "Specificity", "Unclassified",
-			"CV Seed", "CV Folds", "CV Stratified", "Num Instances", "Num Actives", "Endpoint", "Area Under Roc Curve",
-			"F-Measure", "Additional Info", "Model Build Time", "Model Predict Time", "Num True Positives",
-			"Num True Negatives", "Num False Positives", "Num False Negatives", "Testdata Class Values",
-			"Testdata Prediction Values" };
+	private static final String[] NICE_PROPS = { "Dataset Name", "Feature Type", "Fold", "Algorithm", "Accuracy", "Num Test Instances",
+			"Num Train Instances", "Num Features", "Sensitivity", "Specificity", "Unclassified", "CV Seed", "CV Folds", "CV Stratified",
+			"Num Instances", "Num Actives", "Endpoint", "Area Under Roc Curve", "F-Measure", "Additional Info", "Model Build Time",
+			"Model Predict Time", "Num True Positives", "Num True Negatives", "Num False Positives", "Num False Negatives",
+			"Testdata Class Values", "Testdata Prediction Values" };
 
 	public void setNiceProps()
 	{
@@ -254,6 +253,12 @@ public class ResultHandler
 		set = new ResultSet();
 	}
 
+	public boolean evalFileExists(String datasetBaseName, String experimentName)
+	{
+		File f = DataFileManager.getEvalFile(datasetBaseName, experimentName);
+		return f.exists();
+	}
+
 	public void printToFile(String datasetBaseName, String experimentName)
 	{
 		File f = DataFileManager.getEvalFile(datasetBaseName, experimentName);
@@ -261,10 +266,12 @@ public class ResultHandler
 
 		if (f.exists())
 		{
+			Status.INFO.flush();
 			if (Settings.OVERWRITE_EVAL_FILES)
 				Status.WARN.println("Overwriting already exitsing result file: '" + f + "'");
 			else
 				Status.WARN.println("Append to already exitsing result file: '" + f + "'");
+			Status.WARN.flush();
 		}
 		else
 			DataFileManager.createParentFolders(f);
@@ -374,8 +381,7 @@ public class ResultHandler
 				dFilter.addFilterValue(PROPS[PROPERTY_DATASET_NAME], d, false);
 				ResultSet s2 = s.filter(dFilter);
 
-				ResultSet signi = s2.pairedTTest(PROPS[PROPERTY_FEATURE_TYPE], equal, PROPS[PROPERTY_EVAL_ACCURACY],
-						CONFIDENCE_LEVEL);
+				ResultSet signi = s2.pairedTTest(PROPS[PROPERTY_FEATURE_TYPE], equal, PROPS[PROPERTY_EVAL_ACCURACY], CONFIDENCE_LEVEL);
 
 				for (int i = 0; i < signi.getNumResults(); i++)
 				{
@@ -449,7 +455,8 @@ public class ResultHandler
 	// throw new Error("no folds");
 	//
 	// for (int i = 0; i < set.getNumResults(); i++)
-	// set.setResultValue(i, PROPS[PROPERTY_CV_FOLD], ((Number) set.getResultValue(i, PROPS[PROPERTY_CV_FOLD]))
+	// set.setResultValue(i, PROPS[PROPERTY_CV_FOLD], ((Number)
+	// set.getResultValue(i, PROPS[PROPERTY_CV_FOLD]))
 	// .intValue() + 1);
 	//
 	// Status.INFO.println("repaired");
@@ -457,7 +464,8 @@ public class ResultHandler
 	//
 	// }
 
-	public void setDataset(MoleculeActivityData origData, MoleculeActivityData cvData, MinMaxAvg molSizeInfo)
+	public void setDataset(MoleculeActivityData origData, MoleculeActivityData cvData, MinMaxAvg molSizeInfo, FragmentData f,
+			DistancePairData d)
 	{
 		set(PROPERTY_DATASET_NAME, origData.getDatasetBaseName());
 
@@ -466,8 +474,10 @@ public class ResultHandler
 
 		if (cvData != null)
 		{
-			// set("CV-" + PROPS[PROPERTY_DATASET_NUM_INSTANCES], cvData.getNumMolecules());
-			// set("CV-" + PROPS[PROPERTY_DATASET_NUM_ACTIVES], cvData.getNumActives());
+			// set("CV-" + PROPS[PROPERTY_DATASET_NUM_INSTANCES],
+			// cvData.getNumMolecules());
+			// set("CV-" + PROPS[PROPERTY_DATASET_NUM_ACTIVES],
+			// cvData.getNumActives());
 		}
 
 		if (molSizeInfo != null)
@@ -477,9 +487,13 @@ public class ResultHandler
 			set("Max", molSizeInfo.getMax());
 		}
 
+		if (f != null)
+			set("fragments", f.getNumFragments());
+		if (d != null)
+			set("pairs", d.getNumDistancePairs());
+
 		DatasetSizeSettings.setCurrentDatasetSize(origData.getDatasetBaseName());
-		set(PROPERTY_INFO, "min-freq " + DatasetSizeSettings.MIN_FREQUENCY + " ("
-				+ DatasetSizeSettings.MIN_FREQUENCY_PER_CLASS + ")");
+		set(PROPERTY_INFO, "min-freq " + DatasetSizeSettings.MIN_FREQUENCY + " (" + DatasetSizeSettings.MIN_FREQUENCY_PER_CLASS + ")");
 
 		// set(PROPERTY_DATASET_ENDPOINT, d.getEndpoint());
 		push();
@@ -488,7 +502,7 @@ public class ResultHandler
 
 	public void setDataset(MoleculeActivityData origData, MoleculeActivityData cvData)
 	{
-		setDataset(origData, cvData, null);
+		setDataset(origData, cvData, null, null, null);
 	}
 
 	public void setDataset(MoleculeActivityData d)
@@ -498,7 +512,8 @@ public class ResultHandler
 
 	public void setFragments(MoleculeActivityData d, FragmentData f, int fold)
 	{
-		// set(PROPERTY_DATASET_NAME, DataFileManager.getNiceDatasetName(datasetName));
+		// set(PROPERTY_DATASET_NAME,
+		// DataFileManager.getNiceDatasetName(datasetName));
 		set(PROPERTY_DATASET_NAME, d.getDatasetBaseName());
 
 		set(PROPERTY_NUM_TRAIN_INSTANCES, d.getNumMolecules());
@@ -511,7 +526,8 @@ public class ResultHandler
 
 	public void setDistances(MoleculeActivityData d, DistancePairData p, int fold)
 	{
-		// set(PROPERTY_DATASET_NAME, DataFileManager.getNiceDatasetName(datasetName));
+		// set(PROPERTY_DATASET_NAME,
+		// DataFileManager.getNiceDatasetName(datasetName));
 		set(PROPERTY_DATASET_NAME, d.getDatasetBaseName());
 
 		set(PROPERTY_NUM_TRAIN_INSTANCES, d.getNumMolecules());

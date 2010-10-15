@@ -1,18 +1,22 @@
 package eval;
 
-import org.apache.commons.lang.NotImplementedException;
-
 import weka.classifiers.Classifier;
 import weka.classifiers.bayes.NaiveBayes;
 import weka.classifiers.functions.SMO;
 import weka.classifiers.lazy.IBk;
 import weka.classifiers.rules.ZeroR;
-import weka.classifiers.trees.J48;
-import weka.core.AbstractStringSetDistanceFunction;
-import weka.core.NoNeighboursIBk;
+import weka.classifiers.trees.SubsetId3;
+import weka.classifiers.trees.SubsetJ48;
+import weka.core.IBkCombineDistances;
+import weka.core.LinearNNSearchCombineDistances;
+import weka.core.SetDistanceFunction;
+import weka.core.TanimotoDistanceFunction;
+import weka.core.old.NoNeighboursIBk;
+import weka.core.old.OldStringSetDistanceFunction;
 import weka.core.setdistance.CompleteLinkageDistance;
 import weka.core.setdistance.HausdorffDistance;
 import weka.core.setdistance.RIBLDistance;
+import weka.core.setdistance.SetDistance;
 import weka.core.setdistance.SingleLinkageDistance;
 
 public class WekaClassifierFactory
@@ -44,7 +48,33 @@ public class WekaClassifierFactory
 
 	public static NamedClassifier getJ48()
 	{
-		return new NamedClassifier(new J48());
+		return new NamedClassifier(new SubsetJ48());
+	}
+
+	public static NamedClassifier getId3()
+	{
+		return getId3("Id3-plain");
+	}
+
+	public static NamedClassifier getId3Both()
+	{
+		return getId3("Id3-both", SubsetId3.SubsetFeatureType.values());
+	}
+
+	public static NamedClassifier getId3Include()
+	{
+		return getId3("Id3-include", SubsetId3.SubsetFeatureType.INCLUDES);
+	}
+
+	public static NamedClassifier getId3Exclude()
+	{
+		return getId3("Id3-exclude", SubsetId3.SubsetFeatureType.EXCLUDES);
+	}
+
+	private static NamedClassifier getId3(String name, SubsetId3.SubsetFeatureType... types)
+	{
+		SubsetId3 id3 = new SubsetId3(types, types.length == 0);
+		return new NamedClassifier(id3, name);
 	}
 
 	public static NamedClassifier getSMO()
@@ -62,45 +92,51 @@ public class WekaClassifierFactory
 		return new NamedClassifier(new NaiveBayes());
 	}
 
+	private static NamedClassifier getIBK_combineDistances(String name, SetDistance setDistance)
+	{
+		IBk ibk = new IBkCombineDistances(5);
+		ibk.setNearestNeighbourSearchAlgorithm(new LinearNNSearchCombineDistances(new TanimotoDistanceFunction(), new SetDistanceFunction(
+				setDistance)));
+		return new NamedClassifier(ibk, name);
+	}
+
 	public static NamedClassifier getIBK_singleLinkage()
 	{
-		return getSetValuedIBK("IBk-singleLinkage", new SingleLinkageDistance());
+		return getIBK_combineDistances("IBk-singleLinkage", new SingleLinkageDistance());
 	}
 
 	public static NamedClassifier getIBK_completeLinkage()
 	{
-		return getSetValuedIBK("IBk-completeLinkage", new CompleteLinkageDistance());
+		return getIBK_combineDistances("IBk-completeLinkage", new CompleteLinkageDistance());
 	}
 
 	public static NamedClassifier getIBK_hausdoffDistance()
 	{
-		return getSetValuedIBK("IBk-hausdorffDistance", new HausdorffDistance());
+		return getIBK_combineDistances("IBk-hausdorffDistance", new HausdorffDistance());
 	}
 
 	public static NamedClassifier getIBK_RIBL()
 	{
-		return getSetValuedIBK("IBk-RIBL", new RIBLDistance());
+		return getIBK_combineDistances("IBk-RIBL", new RIBLDistance());
 	}
 
 	public static NamedClassifier getIBK_tanimoto()
 	{
-		return getSetValuedIBK("IBk-Tanimoto", new AbstractStringSetDistanceFunction()
-		{
-			@Override
-			public double distance(double[][] matrix)
-			{
-				throw new NotImplementedException("set distance not implemented, only tanimoto for nominal distance");
-			}
-		});
+		IBk ibk = new IBkCombineDistances(5);
+		ibk.setNearestNeighbourSearchAlgorithm(new LinearNNSearchCombineDistances(new TanimotoDistanceFunction()));
+		return new NamedClassifier(ibk, "IBk-tanimoto");
 	}
 
-	private static NamedClassifier getSetValuedIBK(String name, AbstractStringSetDistanceFunction distance)
+	/**
+	 * @deprecated
+	 */
+	private static NamedClassifier getSetValuedIBK(String name, SetDistance distance)
 	{
 		IBk knn = new NoNeighboursIBk();
 		knn.setKNN(5);
 		try
 		{
-			knn.getNearestNeighbourSearchAlgorithm().setDistanceFunction(distance);
+			knn.getNearestNeighbourSearchAlgorithm().setDistanceFunction(new OldStringSetDistanceFunction(distance));
 		}
 		catch (Exception e)
 		{

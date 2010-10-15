@@ -44,6 +44,7 @@ public class Settings
 
 	public static final boolean DEBUG_SWITCH = true;
 
+	public static boolean DEBUG_SKIP_RESULT_EXIST_CHECK;
 	public static boolean DEBUG_SKIP_EVALUATION;
 	public static boolean DEBUG_ABORT_EVALUATION_AFTER_FIRST_ALGORITHM;
 	public static boolean DEBUG_ABORT_CROSSVALIDATION_AFTER_FIRST_FOLD;
@@ -54,17 +55,22 @@ public class Settings
 	public static int DEBUG_KNN_PRINT_SINGLE_PREDICT;
 	public static int[] DEBUG_KNN_PRINT_SINGLE_NEIGHBOUR;
 
+	public static boolean DEBUG_KNN_LINE_PLOT;
+	public static boolean DEBUG_KNN_BAR_PLOT;
+	public static boolean DEBUG_KNN_ANALYZE;
+
 	static
 	{
 		if (DEBUG_SWITCH)
 		{
+			DEBUG_SKIP_RESULT_EXIST_CHECK = true;
 			DEBUG_SKIP_EVALUATION = false;
 			DEBUG_ABORT_EVALUATION_AFTER_FIRST_ALGORITHM = false;
-			DEBUG_ABORT_CROSSVALIDATION_AFTER_FIRST_FOLD = true;
-			DEBUG_START_CROSSVALIDATION_AT_FOLD = -1;
+			DEBUG_ABORT_CROSSVALIDATION_AFTER_FIRST_FOLD = false;
+			DEBUG_START_CROSSVALIDATION_AT_FOLD = 0;
 			DEBUG_START_CROSSVALIDATION_AT_DATASET = -1;
 
-			DEBUG_KNN_PRINT_TESTSET_PREDICT = true;
+			DEBUG_KNN_PRINT_TESTSET_PREDICT = false;
 			if (DEBUG_KNN_PRINT_TESTSET_PREDICT)
 				DEBUG_KNN_PRINT_SINGLE_PREDICT = Integer.MAX_VALUE;
 			else
@@ -74,11 +80,16 @@ public class Settings
 				DEBUG_KNN_PRINT_SINGLE_NEIGHBOUR = new int[] {};// new int[] { 200, 123, 93, 30, 168, 156 };
 			else
 				DEBUG_KNN_PRINT_SINGLE_NEIGHBOUR = new int[] {};
+			DEBUG_KNN_LINE_PLOT = false;
+			DEBUG_KNN_BAR_PLOT = false;
+			DEBUG_KNN_ANALYZE = false;
 
 			// -------------------------------------------------------
 
 			Status.WARN.println("DEBUG SWITCH IS ON");
 
+			if (DEBUG_SKIP_RESULT_EXIST_CHECK)
+				Status.WARN.println(" Skipping result exist check");
 			if (DEBUG_SKIP_EVALUATION)
 				Status.WARN.println(" Skipping evaluation");
 			if (DEBUG_ABORT_EVALUATION_AFTER_FIRST_ALGORITHM)
@@ -94,19 +105,28 @@ public class Settings
 			if (DEBUG_KNN_PRINT_SINGLE_PREDICT > 0)
 				Status.WARN.println(" Print knn single prediction for test inst " + DEBUG_KNN_PRINT_SINGLE_PREDICT);
 			if (DEBUG_KNN_PRINT_SINGLE_NEIGHBOUR.length > 0)
-				Status.WARN.println(" Print knn single neighbours for train inst "
-						+ Arrays.toString(DEBUG_KNN_PRINT_SINGLE_NEIGHBOUR));
+				Status.WARN.println(" Print knn single neighbours for train inst " + Arrays.toString(DEBUG_KNN_PRINT_SINGLE_NEIGHBOUR));
+			if (DEBUG_KNN_BAR_PLOT)
+				Status.WARN.println(" Show knn bar plot");
+			if (DEBUG_KNN_LINE_PLOT)
+				Status.WARN.println(" Show knn line plot");
+			if (DEBUG_KNN_ANALYZE)
+				Status.WARN.println(" Analyze knn");
 		}
 		else
 		{
+			DEBUG_SKIP_RESULT_EXIST_CHECK = false;
 			DEBUG_SKIP_EVALUATION = false;
 			DEBUG_ABORT_EVALUATION_AFTER_FIRST_ALGORITHM = false;
 			DEBUG_ABORT_CROSSVALIDATION_AFTER_FIRST_FOLD = false;
-			DEBUG_START_CROSSVALIDATION_AT_FOLD = -1;
+			DEBUG_START_CROSSVALIDATION_AT_FOLD = 0;
 			DEBUG_START_CROSSVALIDATION_AT_DATASET = -1;
 			DEBUG_KNN_PRINT_TESTSET_PREDICT = false;
 			DEBUG_KNN_PRINT_SINGLE_PREDICT = -1;
 			DEBUG_KNN_PRINT_SINGLE_NEIGHBOUR = new int[] {};
+			DEBUG_KNN_LINE_PLOT = false;
+			DEBUG_KNN_BAR_PLOT = false;
+			DEBUG_KNN_ANALYZE = false;
 		}
 	}
 
@@ -118,7 +138,7 @@ public class Settings
 
 	// settings
 
-	public static final boolean OVERWRITE_EVAL_FILES = true;
+	public static final boolean OVERWRITE_EVAL_FILES = false;
 
 	public static final int CV_NUM_FOLDS = 10;
 	public static final long CV_RANDOM_SEED = 1;
@@ -126,13 +146,17 @@ public class Settings
 
 	// algorithms
 
-	public static final WekaClassifierFactory.NamedClassifier CLASSIFIERS[] = { // WekaClassifierFactory.getIBK(),
-	// WekaClassifierFactory.getIBK_tanimoto(), WekaClassifierFactory.getJ48(), WekaClassifierFactory.getNaiveBayes() };
-	WekaClassifierFactory.getIBK_singleLinkage() };
-	// classifiers.add(WekaClassifierFactory.getIBK_completeLinkage());
-	// classifiers.add(WekaClassifierFactory.getIBK_hausdoffDistance());
-	// classifiers.add(WekaClassifierFactory.getIBK_RIBL());
-	// classifiers.add(WekaClassifierFactory.getIBK());
+	public static final WekaClassifierFactory.NamedClassifier CLASSIFIERS[] = { WekaClassifierFactory.getId3(),
+			WekaClassifierFactory.getId3Both(), WekaClassifierFactory.getId3Include(), WekaClassifierFactory.getId3Exclude(),
+	// WekaClassifierFactory.getId3(true)
+	// WekaClassifierFactory.getIBK(),
+	// wekaClassifierFactory.getIBK_tanimoto(), WekaClassifierFactory.getJ48(),
+	// WekaClassifierFactory.getNaiveBayes() };
+	// WekaClassifierFactory.getIBK_singleLinkage(), WekaClassifierFactory.getIBK_tanimoto(),
+	// WekaClassifierFactory.getIBK_completeLinkage(),
+	// WekaClassifierFactory.getIBK_hausdoffDistance(), WekaClassifierFactory.getIBK_RIBL()
+	//
+	};
 
 	// user specific settings
 

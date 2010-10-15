@@ -22,6 +22,8 @@ import data.MoleculeActivityData;
 
 public class DistancePairDataIO
 {
+	public static final File OB_DISTANCE_DIR = new File(Settings.USER_HOME + "/workspace/OBDistance/Release");
+
 	public static void mineDistancesExternalOB(File f, MoleculeActivityData data, FragmentMoleculeData fragments)
 	{
 		if (!Settings.isModeExternOpenBabel())
@@ -35,8 +37,8 @@ public class DistancePairDataIO
 		File tempFragmentFile = FragmentIO.createTmpFragmentFile(data.getDatasetName(), fragments, true);
 
 		DatasetSizeSettings.setCurrentDatasetSize(data.getDatasetBaseName());
-		String command = Settings.USER_HOME + "/software/OBDistance/OBDistance -s " + tempSmilesFile.getAbsolutePath()
-				+ " -f " + tempFragmentFile.getAbsolutePath() + " -c " + tempClassFile.getAbsolutePath() + " -d -a -m "
+		String command = OB_DISTANCE_DIR + "/OBDistance -s " + tempSmilesFile.getAbsolutePath() + " -f "
+				+ tempFragmentFile.getAbsolutePath() + " -c " + tempClassFile.getAbsolutePath() + " -z -o -d -a -m "
 				+ DatasetSizeSettings.MIN_FREQUENCY + " -i " + DatasetSizeSettings.MIN_FREQUENCY_PER_CLASS;
 
 		ExternalTool.run("OBDistance", f, null, command);
@@ -59,12 +61,11 @@ public class DistancePairDataIO
 		File tempSmilesFile = MoleculeDataIO.createTmpSmilesFile(testData);
 		File tempClassFile = MoleculeDataIO.createTmpClassFile(testData);
 		File tempFragmentFile = FragmentIO.createTmpFragmentFile(testData.getDatasetName(), testFragments, true);
-		File tempDistFile = DistancePairDataIO.createTmpDistancePairFileWithoutDistances(testData.getDatasetName(),
-				trainingDists);
+		File tempDistFile = DistancePairDataIO.createTmpDistancePairFileWithoutDistances(testData.getDatasetName(), trainingDists);
 
-		String command = Settings.USER_HOME + "/software/OBDistance/OBDistance -s " + tempSmilesFile.getAbsolutePath()
-				+ " -f " + tempFragmentFile.getAbsolutePath() + " -c " + tempClassFile.getAbsolutePath() + " -t "
-				+ tempDistFile.getAbsolutePath() + " -x -a";
+		String command = OB_DISTANCE_DIR + "/OBDistance -z -o -s " + tempSmilesFile.getAbsolutePath() + " -f "
+				+ tempFragmentFile.getAbsolutePath() + " -c " + tempClassFile.getAbsolutePath() + " -t " + tempDistFile.getAbsolutePath()
+				+ " -x -a";
 
 		ExternalTool.run("OBDistance", f, null, command);
 
@@ -105,7 +106,7 @@ public class DistancePairDataIO
 					pair[0] = Integer.parseInt(ps.substring(0, index));
 					pair[1] = Integer.parseInt(ps.substring(index + 1));
 
-					assert (pair[0] != pair[1]);
+					// assert (pair[0] != pair[1]);
 				}
 
 				p = Pattern.compile("\\{(.*)\\}$");
@@ -150,8 +151,7 @@ public class DistancePairDataIO
 			e.printStackTrace();
 		}
 
-		DistancePairDataImpl res = new DistancePairDataImpl(distancePairName, fragments, distancePairs,
-				distancePairToMoleculeDistances);
+		DistancePairDataImpl res = new DistancePairDataImpl(distancePairName, fragments, distancePairs, distancePairToMoleculeDistances);
 
 		// Status.INFO.println("done");
 

@@ -61,7 +61,7 @@ public class MineFragmentsCrossValidator extends AbstractCrossValidator
 	}
 
 	@Override
-	protected void finalizeDataset()
+	protected void storeResults()
 	{}
 
 }

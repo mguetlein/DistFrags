@@ -8,6 +8,11 @@ import java.util.List;
 
 import launch.Settings;
 import util.MinMaxAvg;
+import data.DistancePairData;
+import data.FragmentMoleculeData;
+import data.MoleculeActivityData;
+import data.factories.DistancePairFactory;
+import data.factories.FragmentFactory;
 import data.util.CrossValidationData;
 import eval.ResultHandler;
 import filter.ChiSquareFragmentFilter;
@@ -18,7 +23,7 @@ import filter.TTestFilter;
 public class CrossValidationFactory
 {
 
-	public static void printInfo(final String[] datasets)
+	public static void printInfo(final String[] datasets, final String fragmentType, final boolean distancePairInfo)
 	{
 		AbstractCrossValidator cv = new AbstractCrossValidator(datasets)
 		{
@@ -28,13 +33,22 @@ public class CrossValidationFactory
 			@Override
 			protected void crossValidateFold(int fold)
 			{
-				ResultHandler.getInstance().setDataset(data.getOrigMoleculeActivityData(),
-						data.getMoleculeActivityData(fold, false), molSizeInfo);
+				MoleculeActivityData train = data.getMoleculeActivityData(fold, false);
+
+				FragmentMoleculeData frags = null;
+				if (fragmentType != null)
+					frags = FragmentFactory.mineFragments(fragmentType, train);
+				DistancePairData dist = null;
+				if (distancePairInfo)
+					dist = DistancePairFactory.mineDistancePairs(train, frags);
+
+				ResultHandler.getInstance().setDataset(data.getOrigMoleculeActivityData(), train, molSizeInfo, frags, dist);
 			}
 
 			@Override
-			protected void finalizeDataset()
-			{}
+			protected void storeResults()
+			{
+			}
 
 			@Override
 			protected void initializeDataset(CrossValidationData data)
@@ -73,24 +87,27 @@ public class CrossValidationFactory
 
 	public static void performDistancePairCrossValidation(String datasets[], String fragmentType)
 	{
-		EvaluationCrossValidator eval = new EvaluationCrossValidator(datasets, new DistancePairCrossValidatable(
-				fragmentType, new DistancePairSetValuedToArff(), new TTestFilter(10000, 0.01)));// new TTestFilter(1, 500,
+		EvaluationCrossValidator eval = new EvaluationCrossValidator(datasets, new DistancePairCrossValidatable(fragmentType,
+				new DistancePairSetValuedToArff(), new TTestFilter(10000, 0.01)));// new
+		// TTestFilter(1,
+		// 500,
 
-		// EvaluationCrossValidator eval = new EvaluationCrossValidator(datasets, new DistancePairCrossValidatable(
+		// EvaluationCrossValidator eval = new
+		// EvaluationCrossValidator(datasets, new DistancePairCrossValidatable(
 		// fragmentType, new DistancePairNominalMissingDataToArff()));
 		// // 0.1)));
 
 		eval.crossValidate();
 	}
 
-	public static void performFragmentAndDistancePairCrossValidation(String datasets[], String fragmentType,
-			boolean skipEvaluation)
+	public static void performFragmentAndDistancePairCrossValidation(String datasets[], String fragmentType, FragmentFilter fragFilter,
+			DistancePairFilter distFilter, boolean skipEvaluation)
 	{
 		List<EvaluationCrossValidator> evals = new ArrayList<EvaluationCrossValidator>();
 
-		evals.add(new EvaluationCrossValidator(datasets, new CombinedCrossValidatable(new FragmentCrossValidatable(
-				fragmentType/* , new ChiSquareFragmentFilter(10000, 0.01) */), new DistancePairCrossValidatable(
-				fragmentType, new DistancePairSetValuedToArff(), new TTestFilter(10000, 0.01)))));
+		evals.add(new EvaluationCrossValidator(datasets, new CombinedCrossValidatable(
+				new FragmentCrossValidatable(fragmentType, fragFilter), new DistancePairCrossValidatable(fragmentType,
+						new DistancePairSetValuedToArff(), distFilter))));
 
 		for (EvaluationCrossValidator eval : evals)
 			eval.crossValidate();
@@ -100,10 +117,13 @@ public class CrossValidationFactory
 	{
 		List<EvaluationCrossValidator> evals = new ArrayList<EvaluationCrossValidator>();
 
-		// evals.add(new EvaluationCrossValidator(datasets, new FragmentCrossValidatable(fragmentType)));
-		evals.add(new EvaluationCrossValidator(datasets, new FragmentCrossValidatable(fragmentType,
-				new ChiSquareFragmentFilter(100, 0.05))));
-		// evals.add(new EvaluationCrossValidator(datasets, new FragmentCrossValidatable(fragmentType,
+		// evals.add(new EvaluationCrossValidator(datasets, new
+		// FragmentCrossValidatable(fragmentType)));
+		evals
+				.add(new EvaluationCrossValidator(datasets, new FragmentCrossValidatable(fragmentType, new ChiSquareFragmentFilter(100,
+						0.05))));
+		// evals.add(new EvaluationCrossValidator(datasets, new
+		// FragmentCrossValidatable(fragmentType,
 		// new ChiSquareFragmentFilter(5000, 0.05))));
 
 		for (EvaluationCrossValidator eval : evals)
@@ -114,25 +134,29 @@ public class CrossValidationFactory
 	{
 		List<EvaluationCrossValidator> evals = new ArrayList<EvaluationCrossValidator>();
 
-		evals.add(new EvaluationCrossValidator(datasets, new DistancePairCrossValidatable(fragmentType,
-				new DistancePairOccuringToArff())));
-		evals.add(new EvaluationCrossValidator(datasets, new DistancePairCrossValidatable(fragmentType,
-				new DistancePairOccuringToArff(), new TTestFilter(100, 0.05))));
+		evals.add(new EvaluationCrossValidator(datasets, new DistancePairCrossValidatable(fragmentType, new DistancePairOccuringToArff())));
+		evals.add(new EvaluationCrossValidator(datasets, new DistancePairCrossValidatable(fragmentType, new DistancePairOccuringToArff(),
+				new TTestFilter(100, 0.05))));
 
 		for (EvaluationCrossValidator eval : evals)
 			eval.crossValidate();
 	}
 
-	// public static void printInfo(MoleculeActivityData moleculeData, int numFolds, long randomSeed, boolean stratified,
+	// public static void printInfo(MoleculeActivityData moleculeData, int
+	// numFolds, long randomSeed, boolean stratified,
 	// String fragmentType)
 	// {
-	// setResultValues(moleculeData.getDatasetName(), numFolds, randomSeed, stratified);
+	// setResultValues(moleculeData.getDatasetName(), numFolds, randomSeed,
+	// stratified);
 	//
-	// CrossValidationData xval = new CrossValidationData(moleculeData, numFolds, randomSeed, stratified);
-	// DistancePairCrossValidatable cv = new DistancePairCrossValidatable(xval, fragmentType);
+	// CrossValidationData xval = new CrossValidationData(moleculeData,
+	// numFolds, randomSeed, stratified);
+	// DistancePairCrossValidatable cv = new DistancePairCrossValidatable(xval,
+	// fragmentType);
 	// cv.loadAllData();
 	//
-	// Status.INFO.println("\n" + moleculeData.getDatasetName() + "\n" + cv.toString());
+	// Status.INFO.println("\n" + moleculeData.getDatasetName() + "\n" +
+	// cv.toString());
 	// }
 
 }
